@@ -3,33 +3,62 @@ import * as z from 'zod'
 import type { FormSubmitEvent } from '@nuxt/ui'
 
 const fileRef = ref<HTMLInputElement>()
+const toast = useToast()
+const { fetch: fetchSession } = useUserSession()
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Too short'),
   email: z.string().email('Invalid email'),
-  username: z.string().min(2, 'Too short'),
   avatar: z.string().optional(),
   bio: z.string().optional()
 })
 
-type ProfileSchema = z.output<typeof profileSchema>
+type ProfileSchema = z.infer<typeof profileSchema>
+
+const loading = ref(true)
+const saving = ref(false)
 
 const profile = reactive<Partial<ProfileSchema>>({
-  name: 'Benjamin Canac',
-  email: 'ben@nuxtlabs.com',
-  username: 'benjamincanac',
+  name: '',
+  email: '',
   avatar: undefined,
   bio: undefined
 })
-const toast = useToast()
+
+onMounted(async () => {
+  try {
+    const data = await $fetch('/api/auth/profile')
+    profile.name = data.name
+    profile.email = data.email
+    profile.avatar = data.avatar || undefined
+    profile.bio = data.bio || undefined
+  } catch {
+    toast.add({ title: 'Error', description: 'Failed to load profile', color: 'error' })
+  } finally {
+    loading.value = false
+  }
+})
+
 async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
-  toast.add({
-    title: 'Success',
-    description: 'Your settings have been updated.',
-    icon: 'i-lucide-check',
-    color: 'success'
-  })
-  console.log(event.data)
+  saving.value = true
+  try {
+    await $fetch('/api/auth/profile', {
+      method: 'PUT',
+      body: event.data
+    })
+    await fetchSession()
+    toast.add({
+      title: 'Success',
+      description: 'Your settings have been updated.',
+      icon: 'i-lucide-check',
+      color: 'success'
+    })
+  } catch (err: unknown) {
+    const e = err as { data?: { statusMessage?: string } }
+    toast.add({ title: 'Error', description: e?.data?.statusMessage || 'Failed to update profile', color: 'error' })
+  } finally {
+    saving.value = false
+  }
 }
 
 function onFileChange(e: Event) {
@@ -66,6 +95,7 @@ function onFileClick() {
         label="Save changes"
         color="neutral"
         type="submit"
+        :loading="saving"
         class="w-fit lg:ms-auto"
       />
     </UPageCard>
@@ -94,20 +124,6 @@ function onFileClick() {
         <UInput
           v-model="profile.email"
           type="email"
-          autocomplete="off"
-        />
-      </UFormField>
-      <USeparator />
-      <UFormField
-        name="username"
-        label="Username"
-        description="Your unique username for logging in and your profile URL."
-        required
-        class="flex max-sm:flex-col justify-between items-start gap-4"
-      >
-        <UInput
-          v-model="profile.username"
-          type="username"
           autocomplete="off"
         />
       </UFormField>

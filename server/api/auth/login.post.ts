@@ -26,7 +26,7 @@ export default defineEventHandler( async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
   }
 
-  const safeUser = { id: user._id.toString(), name: user.name, email: user.email }
+  const safeUser = { id: user._id.toString(), name: user.name, email: user.email, avatar: user.avatar || '' }
   await setUserSession(event, { user: safeUser })
   return { user: safeUser }
 })

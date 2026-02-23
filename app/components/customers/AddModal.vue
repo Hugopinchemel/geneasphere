@@ -8,7 +8,7 @@ const schema = z.object({
 })
 const open = ref(false)
 
-type Schema = z.output<typeof schema>
+type Schema = z.infer<typeof schema>
 
 const state = reactive<Partial<Schema>>({
   name: '',

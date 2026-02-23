@@ -13,19 +13,17 @@ const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
 
 const userDisplay = computed(() => {
-  const u = user.value as { name?: string } | null
+  const u = user.value as { name?: string, avatar?: string } | null
   return {
     name: u?.name || 'User',
-    avatar: {
-      alt: u?.name || 'User'
-    }
+    avatar: u?.avatar || ''
   }
 })
 
 const items = computed<DropdownMenuItem[][]>(() => ([[{
   type: 'label',
   label: userDisplay.value.name,
-  avatar: userDisplay.value.avatar
+  avatar: { src: userDisplay.value.avatar, alt: userDisplay.value.name }
 }], [{
   label: 'Profile',
   icon: 'i-lucide-user'
@@ -128,7 +126,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
         trailingIcon: 'text-dimmed'
       }"
     >
-      <UAvatar :alt="userDisplay.name" size="2xs" />
+      <UAvatar :src="userDisplay.avatar" :alt="userDisplay.name" size="2xs" />
       <span v-if="!collapsed" class="truncate text-left flex-1">{{ userDisplay.name }}</span>
       <UIcon v-if="!collapsed" name="i-lucide-chevrons-up-down" class="text-dimmed shrink-0" />
     </UButton>

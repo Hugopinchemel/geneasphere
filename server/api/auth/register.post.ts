@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
   const passwordHash = await hash(password, 10)
   const user = await UserModel.create({ name, email, password: passwordHash })
 
-  const safeUser = { id: user._id.toString(), name: user.name, email: user.email }
+  const safeUser = { id: user._id.toString(), name: user.name, email: user.email, avatar: '' }
   await setUserSession(event, { user: safeUser })
   return { user: safeUser }
 })

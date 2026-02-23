@@ -5,25 +5,24 @@ defineProps<{
   collapsed?: boolean
 }>()
 
-const teams = ref([{
-  label: 'Nuxt',
-  avatar: {
-    src: 'https://github.com/nuxt.png',
-    alt: 'Nuxt'
-  }
-}, {
-  label: 'NuxtHub',
-  avatar: {
-    src: 'https://github.com/nuxt-hub.png',
-    alt: 'NuxtHub'
-  }
-}, {
-  label: 'NuxtLabs',
-  avatar: {
-    src: 'https://github.com/nuxtlabs.png',
-    alt: 'NuxtLabs'
-  }
-}])
+const { user } = useUserSession()
+
+const teams = computed(() => {
+  const u = user.value as { name?: string, avatar?: string } | null
+  return [{
+    label: 'Geneasphere',
+    avatar: {
+      icon: 'i-lucide-globe',
+      alt: 'Geneasphere'
+    }
+  }, {
+    label: u?.name || 'Personal',
+    avatar: {
+      src: u?.avatar || '',
+      alt: u?.name || 'Personal'
+    }
+  }]
+})
 const selectedTeam = ref(teams.value[0])
 
 const items = computed<DropdownMenuItem[][]>(() => {
