@@ -1,4 +1,4 @@
-import { sub } from 'date-fns'
+import {sub} from 'date-fns'
 
 const mails = [{
 
@@ -14,7 +14,7 @@ const mails = [{
   Nous sommes ravis de vous accueillir dans notre communauté de passionnés de généalogie.
 
   `,
-  date: sub(new Date(), { months: 0 }).toISOString()
+  date: sub(new Date(), {months: 0}).toISOString()
 }]
 
 export default eventHandler(async () => {

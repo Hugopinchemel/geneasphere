@@ -1,6 +1,6 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type {FormSubmitEvent} from '@nuxt/ui'
 
 const schema = z.object({
   name: z.string().min(2, 'Too short'),
@@ -16,15 +16,16 @@ const state = reactive<Partial<Schema>>({
 })
 
 const toast = useToast()
+
 async function onSubmit(event: FormSubmitEvent<Schema>) {
-  toast.add({ title: 'Success', description: `New customer ${event.data.name} added`, color: 'success' })
+  toast.add({title: 'Success', description: `New customer ${event.data.name} added`, color: 'success'})
   open.value = false
 }
 </script>
 
 <template>
-  <UModal v-model:open="open" title="New customer" description="Add a new customer to the database">
-    <UButton label="New customer" icon="i-lucide-plus" />
+  <UModal v-model:open="open" description="Add a new customer to the database" title="New customer">
+    <UButton icon="i-lucide-plus" label="New customer"/>
 
     <template #body>
       <UForm
@@ -33,24 +34,24 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         class="space-y-4"
         @submit="onSubmit"
       >
-        <UFormField label="Name" placeholder="John Doe" name="name">
-          <UInput v-model="state.name" class="w-full" />
+        <UFormField label="Name" name="name" placeholder="John Doe">
+          <UInput v-model="state.name" class="w-full"/>
         </UFormField>
-        <UFormField label="Email" placeholder="john.doe@example.com" name="email">
-          <UInput v-model="state.email" class="w-full" />
+        <UFormField label="Email" name="email" placeholder="john.doe@example.com">
+          <UInput v-model="state.email" class="w-full"/>
         </UFormField>
         <div class="flex justify-end gap-2">
           <UButton
-            label="Cancel"
             color="neutral"
+            label="Cancel"
             variant="subtle"
             @click="open = false"
           />
           <UButton
-            label="Create"
             color="primary"
-            variant="solid"
+            label="Create"
             type="submit"
+            variant="solid"
           />
         </div>
       </UForm>

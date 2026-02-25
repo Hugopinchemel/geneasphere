@@ -1,12 +1,12 @@
-<script setup lang="ts">
-definePageMeta({ layout: 'auth' })
+<script lang="ts" setup>
+definePageMeta({layout: 'auth'})
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const loading = ref(false)
-const form = reactive({ email: '', password: '' })
-const { fetch: fetchSession } = useUserSession()
+const form = reactive({email: '', password: ''})
+const {fetch: fetchSession} = useUserSession()
 
 async function onSubmit() {
   loading.value = true
@@ -20,7 +20,7 @@ async function onSubmit() {
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
     const msg = e?.data?.statusMessage || 'Invalid credentials'
-    toast.add({ title: 'Login failed', description: msg, color: 'error' })
+    toast.add({title: 'Login failed', description: msg, color: 'error'})
   } finally {
     loading.value = false
   }
@@ -43,23 +43,23 @@ async function onSubmit() {
         <UFormField label="Email" name="email">
           <UInput
             v-model="form.email"
-            type="email"
             placeholder="you@example.com"
             required
+            type="email"
           />
         </UFormField>
         <UFormField label="Password" name="password">
           <UInput
             v-model="form.password"
-            type="password"
             placeholder="••••••••"
             required
+            type="password"
           />
         </UFormField>
         <UButton
-          type="submit"
           :loading="loading"
           block
+          type="submit"
         >
           Sign in
         </UButton>

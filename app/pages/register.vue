@@ -1,12 +1,12 @@
-<script setup lang="ts">
-definePageMeta({ layout: 'auth' })
+<script lang="ts" setup>
+definePageMeta({layout: 'auth'})
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const loading = ref(false)
-const form = reactive({ name: '', email: '', password: '' })
-const { fetch: fetchSession } = useUserSession()
+const form = reactive({name: '', email: '', password: ''})
+const {fetch: fetchSession} = useUserSession()
 
 async function onSubmit() {
   loading.value = true
@@ -20,7 +20,7 @@ async function onSubmit() {
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
     const msg = e?.data?.statusMessage || 'Registration failed'
-    toast.add({ title: 'Sign up failed', description: msg, color: 'error' })
+    toast.add({title: 'Sign up failed', description: msg, color: 'error'})
   } finally {
     loading.value = false
   }
@@ -43,31 +43,31 @@ async function onSubmit() {
         <UFormField label="Name" name="name">
           <UInput
             v-model="form.name"
-            type="text"
             placeholder="Jane Doe"
             required
+            type="text"
           />
         </UFormField>
         <UFormField label="Email" name="email">
           <UInput
             v-model="form.email"
-            type="email"
             placeholder="you@example.com"
             required
+            type="email"
           />
         </UFormField>
         <UFormField label="Password" name="password">
           <UInput
             v-model="form.password"
-            type="password"
             placeholder="••••••••"
             required
+            type="password"
           />
         </UFormField>
         <UButton
-          type="submit"
           :loading="loading"
           block
+          type="submit"
         >
           Create account
         </UButton>

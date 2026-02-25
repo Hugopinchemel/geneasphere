@@ -1,10 +1,10 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
+import type {FormSubmitEvent} from '@nuxt/ui'
 
 const fileRef = ref<HTMLInputElement>()
 const toast = useToast()
-const { fetch: fetchSession } = useUserSession()
+const {fetch: fetchSession} = useUserSession()
 
 const profileSchema = z.object({
   name: z.string().min(2, 'Too short'),
@@ -17,6 +17,7 @@ type ProfileSchema = z.infer<typeof profileSchema>
 
 const loading = ref(true)
 const saving = ref(false)
+const uploading = ref(false)
 
 const profile = reactive<Partial<ProfileSchema>>({
   name: '',
@@ -33,7 +34,7 @@ onMounted(async () => {
     profile.avatar = data.avatar || undefined
     profile.bio = data.bio || undefined
   } catch {
-    toast.add({ title: 'Error', description: 'Failed to load profile', color: 'error' })
+    toast.add({title: 'Error', description: 'Failed to load profile', color: 'error'})
   } finally {
     loading.value = false
   }
@@ -55,20 +56,37 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
     })
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
-    toast.add({ title: 'Error', description: e?.data?.statusMessage || 'Failed to update profile', color: 'error' })
+    toast.add({title: 'Error', description: e?.data?.statusMessage || 'Failed to update profile', color: 'error'})
   } finally {
     saving.value = false
   }
 }
 
-function onFileChange(e: Event) {
+async function onFileChange(e: Event) {
   const input = e.target as HTMLInputElement
+  if (!input.files?.length) return
 
-  if (!input.files?.length) {
+  const file = input.files[0]!
+  if (file.size > 5 * 1024 * 1024) {
+    toast.add({title: 'Erreur', description: 'Le fichier est trop volumineux (max 5 Mo)', color: 'error'})
     return
   }
 
-  profile.avatar = URL.createObjectURL(input.files[0]!)
+  uploading.value = true
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    const result = await $fetch<{ url: string }>('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+    profile.avatar = result.url
+    toast.add({title: 'Photo uploadée', color: 'success'})
+  } catch {
+    toast.add({title: 'Erreur', description: 'Impossible d\'uploader la photo', color: 'error'})
+  } finally {
+    uploading.value = false
+  }
 }
 
 function onFileClick() {
@@ -84,83 +102,84 @@ function onFileClick() {
     @submit="onSubmit"
   >
     <UPageCard
-      title="Profile"
-      description="These informations will be displayed publicly."
-      variant="naked"
-      orientation="horizontal"
       class="mb-4"
+      description="These informations will be displayed publicly."
+      orientation="horizontal"
+      title="Profile"
+      variant="naked"
     >
       <UButton
-        form="settings"
-        label="Save changes"
-        color="neutral"
-        type="submit"
         :loading="saving"
         class="w-fit lg:ms-auto"
+        color="neutral"
+        form="settings"
+        label="Save changes"
+        type="submit"
       />
     </UPageCard>
 
     <UPageCard variant="subtle">
       <UFormField
-        name="name"
-        label="Name"
-        description="Will appear on receipts, invoices, and other communication."
-        required
         class="flex max-sm:flex-col justify-between items-start gap-4"
+        description="Will appear on receipts, invoices, and other communication."
+        label="Name"
+        name="name"
+        required
       >
         <UInput
           v-model="profile.name"
           autocomplete="off"
         />
       </UFormField>
-      <USeparator />
+      <USeparator/>
       <UFormField
-        name="email"
-        label="Email"
-        description="Used to sign in, for email receipts and product updates."
-        required
         class="flex max-sm:flex-col justify-between items-start gap-4"
+        description="Used to sign in, for email receipts and product updates."
+        label="Email"
+        name="email"
+        required
       >
         <UInput
           v-model="profile.email"
-          type="email"
           autocomplete="off"
+          type="email"
         />
       </UFormField>
-      <USeparator />
+      <USeparator/>
       <UFormField
-        name="avatar"
-        label="Avatar"
-        description="JPG, GIF or PNG. 1MB Max."
         class="flex max-sm:flex-col justify-between sm:items-center gap-4"
+        description="JPG, GIF or PNG. 1MB Max."
+        label="Avatar"
+        name="avatar"
       >
         <div class="flex flex-wrap items-center gap-3">
           <UAvatar
-            :src="profile.avatar"
             :alt="profile.name"
+            :src="profile.avatar"
             size="lg"
           />
           <UButton
-            label="Choose"
+            :loading="uploading"
             color="neutral"
+            label="Choose"
             @click="onFileClick"
           />
           <input
             ref="fileRef"
-            type="file"
-            class="hidden"
             accept=".jpg, .jpeg, .png, .gif"
+            class="hidden"
+            type="file"
             @change="onFileChange"
           >
         </div>
       </UFormField>
-      <USeparator />
+      <USeparator/>
       <UFormField
-        name="bio"
-        label="Bio"
-        description="Brief description for your profile. URLs are hyperlinked."
-        class="flex max-sm:flex-col justify-between items-start gap-4"
         :ui="{ container: 'w-full' }"
+        class="flex max-sm:flex-col justify-between items-start gap-4"
+        description="Brief description for your profile. URLs are hyperlinked."
+        label="Bio"
+        name="bio"
       >
         <UTextarea
           v-model="profile.bio"

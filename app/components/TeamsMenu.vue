@@ -1,37 +1,38 @@
-<script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+<script lang="ts" setup>
+import type {DropdownMenuItem} from '@nuxt/ui'
 
 defineProps<{
   collapsed?: boolean
 }>()
 
-const { user } = useUserSession()
+const {user} = useUserSession()
+
+const brandTeam = {
+  label: 'Geneasphere',
+  avatar: {
+    icon: 'i-lucide-globe',
+    alt: 'Geneasphere'
+  }
+}
 
 const teams = computed(() => {
   const u = user.value as { name?: string, avatar?: string } | null
-  return [{
-    label: 'Geneasphere',
-    avatar: {
-      icon: 'i-lucide-globe',
-      alt: 'Geneasphere'
+  return [
+    brandTeam,
+    {
+      label: u?.name || 'Personal',
+      avatar: {
+        src: u?.avatar || '',
+        alt: u?.name || 'Personal'
+      }
     }
-  }, {
-    label: u?.name || 'Personal',
-    avatar: {
-      src: u?.avatar || '',
-      alt: u?.name || 'Personal'
-    }
-  }]
+  ]
 })
-const selectedTeam = ref(teams.value[0])
+
+const selectedTeam = computed(() => brandTeam)
 
 const items = computed<DropdownMenuItem[][]>(() => {
-  return [teams.value.map(team => ({
-    ...team,
-    onSelect() {
-      selectedTeam.value = team
-    }
-  })), [{
+  return [teams.value, [{
     label: 'Create team',
     icon: 'i-lucide-circle-plus'
   }, {
@@ -43,25 +44,25 @@ const items = computed<DropdownMenuItem[][]>(() => {
 
 <template>
   <UDropdownMenu
-    :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
+    :items="items"
     :ui="{ content: collapsed ? 'w-40' : 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <UButton
+      :class="[!collapsed && 'py-2']"
+      :square="collapsed"
+      :ui="{
+        trailingIcon: 'text-dimmed'
+      }"
+      block
+      class="data-[state=open]:bg-elevated"
+      color="neutral"
       v-bind="{
         ...selectedTeam,
         label: collapsed ? undefined : selectedTeam?.label,
         trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down'
       }"
-      color="neutral"
       variant="ghost"
-      block
-      :square="collapsed"
-      class="data-[state=open]:bg-elevated"
-      :class="[!collapsed && 'py-2']"
-      :ui="{
-        trailingIcon: 'text-dimmed'
-      }"
     />
   </UDropdownMenu>
 </template>

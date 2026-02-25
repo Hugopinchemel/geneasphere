@@ -1,4 +1,4 @@
-import type { AvatarProps } from '@nuxt/ui'
+import type {AvatarProps} from '@nuxt/ui'
 
 export type UserStatus = 'subscribed' | 'unsubscribed' | 'bounced'
 export type SaleStatus = 'paid' | 'failed' | 'refunded'
@@ -57,4 +57,42 @@ export type Period = 'daily' | 'weekly' | 'monthly'
 export interface Range {
   start: Date
   end: Date
+}
+
+// Généalogie
+export type Sex = 'M' | 'F' | 'Autre'
+export type MatrimonialStatus = 'marié' | 'divorcé' | 'pacsé' | 'union_libre' | 'inconnu'
+export type ChildLinkType = 'biologique' | 'adoption' | 'gpa'
+
+export interface Person {
+  _id: string
+  firstName: string
+  lastName: string
+  sex: Sex
+  birthDate?: string | null
+  deathDate?: string | null
+  birthPlace?: string
+  deathPlace?: string
+  photo?: string
+  notes?: string
+  createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface MatrimonialChild {
+  person: string | Person
+  linkType: ChildLinkType
+}
+
+export interface MatrimonialNode {
+  _id: string
+  status: MatrimonialStatus
+  startDate?: string | null
+  endDate?: string | null
+  parents: (string | Person)[]
+  children: MatrimonialChild[]
+  createdBy: string
+  createdAt: string
+  updatedAt: string
 }

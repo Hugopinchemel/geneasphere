@@ -1,20 +1,20 @@
-<script setup lang="ts">
-import { DateFormatter, getLocalTimeZone, CalendarDate, today } from '@internationalized/date'
-import type { Range } from '~/types'
+<script lang="ts" setup>
+import {CalendarDate, DateFormatter, getLocalTimeZone, today} from '@internationalized/date'
+import type {Range} from '~/types'
 
 const df = new DateFormatter('en-US', {
   dateStyle: 'medium'
 })
 
-const selected = defineModel<Range>({ required: true })
+const selected = defineModel<Range>({required: true})
 
 const ranges = [
-  { label: 'Last 7 days', days: 7 },
-  { label: 'Last 14 days', days: 14 },
-  { label: 'Last 30 days', days: 30 },
-  { label: 'Last 3 months', months: 3 },
-  { label: 'Last 6 months', months: 6 },
-  { label: 'Last year', years: 1 }
+  {label: 'Last 7 days', days: 7},
+  {label: 'Last 14 days', days: 14},
+  {label: 'Last 30 days', days: 30},
+  {label: 'Last 3 months', months: 3},
+  {label: 'Last 6 months', months: 6},
+  {label: 'Last year', years: 1}
 ]
 
 const toCalendarDate = (date: Date) => {
@@ -45,11 +45,11 @@ const isRangeSelected = (range: { days?: number, months?: number, years?: number
   let startDate = currentDate.copy()
 
   if (range.days) {
-    startDate = startDate.subtract({ days: range.days })
+    startDate = startDate.subtract({days: range.days})
   } else if (range.months) {
-    startDate = startDate.subtract({ months: range.months })
+    startDate = startDate.subtract({months: range.months})
   } else if (range.years) {
-    startDate = startDate.subtract({ years: range.years })
+    startDate = startDate.subtract({years: range.years})
   }
 
   const selectedStart = toCalendarDate(selected.value.start)
@@ -63,11 +63,11 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
   let startDate = endDate.copy()
 
   if (range.days) {
-    startDate = startDate.subtract({ days: range.days })
+    startDate = startDate.subtract({days: range.days})
   } else if (range.months) {
-    startDate = startDate.subtract({ months: range.months })
+    startDate = startDate.subtract({months: range.months})
   } else if (range.years) {
-    startDate = startDate.subtract({ years: range.years })
+    startDate = startDate.subtract({years: range.years})
   }
 
   selected.value = {
@@ -80,10 +80,10 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
 <template>
   <UPopover :content="{ align: 'start' }" :modal="true">
     <UButton
-      color="neutral"
-      variant="ghost"
-      icon="i-lucide-calendar"
       class="data-[state=open]:bg-elevated group"
+      color="neutral"
+      icon="i-lucide-calendar"
+      variant="ghost"
     >
       <span class="truncate">
         <template v-if="selected.start">
@@ -100,7 +100,8 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
       </span>
 
       <template #trailing>
-        <UIcon name="i-lucide-chevron-down" class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200" />
+        <UIcon class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200"
+               name="i-lucide-chevron-down"/>
       </template>
     </UButton>
 
@@ -110,20 +111,20 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
           <UButton
             v-for="(range, index) in ranges"
             :key="index"
-            :label="range.label"
-            color="neutral"
-            variant="ghost"
-            class="rounded-none px-4"
             :class="[isRangeSelected(range) ? 'bg-elevated' : 'hover:bg-elevated/50']"
+            :label="range.label"
+            class="rounded-none px-4"
+            color="neutral"
             truncate
+            variant="ghost"
             @click="selectRange(range)"
           />
         </div>
 
         <UCalendar
           v-model="calendarRange"
-          class="p-2"
           :number-of-months="2"
+          class="p-2"
           range
         />
       </div>

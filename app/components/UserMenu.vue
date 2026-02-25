@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+<script lang="ts" setup>
+import type {DropdownMenuItem} from '@nuxt/ui'
 
 defineProps<{
   collapsed?: boolean
@@ -7,7 +7,7 @@ defineProps<{
 
 const colorMode = useColorMode()
 const appConfig = useAppConfig()
-const { user, loggedIn, clear } = useUserSession()
+const {user, loggedIn, clear, fetch: fetchSession} = useUserSession()
 
 const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
@@ -20,13 +20,37 @@ const userDisplay = computed(() => {
   }
 })
 
+async function savePreferences(prefs: { theme?: string, primaryColor?: string, neutralColor?: string }) {
+  try {
+    await $fetch('/api/auth/preferences', {method: 'PUT', body: prefs})
+    await fetchSession()
+  } catch {
+    // silently fail
+  }
+}
+
+// Restaurer les préférences depuis la session utilisateur au montage
+onMounted(() => {
+  const u = user.value as { theme?: string, primaryColor?: string, neutralColor?: string } | null
+  if (u?.theme) {
+    colorMode.preference = u.theme
+  }
+  if (u?.primaryColor) {
+    appConfig.ui.colors.primary = u.primaryColor
+  }
+  if (u?.neutralColor) {
+    appConfig.ui.colors.neutral = u.neutralColor
+  }
+})
+
 const items = computed<DropdownMenuItem[][]>(() => ([[{
   type: 'label',
   label: userDisplay.value.name,
-  avatar: { src: userDisplay.value.avatar, alt: userDisplay.value.name }
+  avatar: {src: userDisplay.value.avatar, alt: userDisplay.value.name}
 }], [{
   label: 'Profile',
-  icon: 'i-lucide-user'
+  icon: 'i-lucide-user',
+  to: '/settings'
 }], [{
   label: 'Theme',
   icon: 'i-lucide-palette',
@@ -46,8 +70,8 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       type: 'checkbox',
       onSelect: (e) => {
         e.preventDefault()
-
         appConfig.ui.colors.primary = color
+        savePreferences({primaryColor: color})
       }
     }))
   }, {
@@ -66,8 +90,8 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       checked: appConfig.ui.colors.neutral === color,
       onSelect: (e) => {
         e.preventDefault()
-
         appConfig.ui.colors.neutral = color
+        savePreferences({neutralColor: color})
       }
     }))
   }]
@@ -81,28 +105,25 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
     checked: colorMode.value === 'light',
     onSelect(e: Event) {
       e.preventDefault()
-
       colorMode.preference = 'light'
+      savePreferences({theme: 'light'})
     }
   }, {
     label: 'Dark',
     icon: 'i-lucide-moon',
     type: 'checkbox',
     checked: colorMode.value === 'dark',
-    onUpdateChecked(checked: boolean) {
-      if (checked) {
-        colorMode.preference = 'dark'
-      }
-    },
     onSelect(e: Event) {
       e.preventDefault()
+      colorMode.preference = 'dark'
+      savePreferences({theme: 'dark'})
     }
   }]
 }], [{
   label: 'Log out',
   icon: 'i-lucide-log-out',
   onSelect: async () => {
-    await $fetch('/api/auth/logout', { method: 'POST' })
+    await $fetch('/api/auth/logout', {method: 'POST'})
     await clear()
     await navigateTo('/login')
   }
@@ -112,33 +133,33 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
 <template>
   <UDropdownMenu
     v-if="loggedIn"
-    :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
+    :items="items"
     :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <UButton
-      color="neutral"
-      variant="ghost"
-      block
       :square="collapsed"
-      class="data-[state=open]:bg-elevated"
       :ui="{
         trailingIcon: 'text-dimmed'
       }"
+      block
+      class="data-[state=open]:bg-elevated"
+      color="neutral"
+      variant="ghost"
     >
-      <UAvatar :src="userDisplay.avatar" :alt="userDisplay.name" size="2xs" />
+      <UAvatar :alt="userDisplay.name" :src="userDisplay.avatar" size="2xs"/>
       <span v-if="!collapsed" class="truncate text-left flex-1">{{ userDisplay.name }}</span>
-      <UIcon v-if="!collapsed" name="i-lucide-chevrons-up-down" class="text-dimmed shrink-0" />
+      <UIcon v-if="!collapsed" class="text-dimmed shrink-0" name="i-lucide-chevrons-up-down"/>
     </UButton>
 
     <template #chip-leading="{ item }">
       <div class="inline-flex items-center justify-center shrink-0 size-5">
         <span
-          class="rounded-full ring ring-bg bg-(--chip-light) dark:bg-(--chip-dark) size-2"
           :style="{
             '--chip-light': `var(--color-${(item as any).chip}-500)`,
             '--chip-dark': `var(--color-${(item as any).chip}-400)`
           }"
+          class="rounded-full ring ring-bg bg-(--chip-light) dark:bg-(--chip-dark) size-2"
         />
       </div>
     </template>
@@ -146,12 +167,12 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
 
   <UButton
     v-else
-    to="/login"
-    icon="i-lucide-log-in"
     :label="collapsed ? undefined : 'Sign in'"
-    color="primary"
-    variant="soft"
-    block
     :square="collapsed"
+    block
+    color="primary"
+    icon="i-lucide-log-in"
+    to="/login"
+    variant="soft"
   />
 </template>

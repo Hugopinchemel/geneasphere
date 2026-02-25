@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script lang="ts" setup>
 const state = reactive<{ [key: string]: boolean }>({
   email: true,
   desktop: false,
@@ -46,19 +46,19 @@ async function onChange() {
 <template>
   <div v-for="(section, index) in sections" :key="index">
     <UPageCard
-      :title="section.title"
       :description="section.description"
-      variant="naked"
+      :title="section.title"
       class="mb-4"
+      variant="naked"
     />
 
-    <UPageCard variant="subtle" :ui="{ container: 'divide-y divide-default' }">
+    <UPageCard :ui="{ container: 'divide-y divide-default' }" variant="subtle">
       <UFormField
         v-for="field in section.fields"
         :key="field.name"
-        :name="field.name"
-        :label="field.label"
         :description="field.description"
+        :label="field.label"
+        :name="field.name"
         class="flex items-center justify-between not-last:pb-4 gap-2"
       >
         <USwitch

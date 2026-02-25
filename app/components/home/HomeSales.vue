@@ -1,7 +1,7 @@
-<script setup lang="ts">
-import { h, resolveComponent } from 'vue'
-import type { TableColumn } from '@nuxt/ui'
-import type { Period, Range, Sale } from '~/types'
+<script lang="ts" setup>
+import {h, resolveComponent} from 'vue'
+import type {TableColumn} from '@nuxt/ui'
+import type {Period, Range, Sale} from '~/types'
 
 const props = defineProps<{
   period: Period
@@ -18,7 +18,7 @@ const sampleEmails = [
   'ethan.harris@example.com'
 ]
 
-const { data } = await useAsyncData('sales', async () => {
+const {data} = await useAsyncData('sales', async () => {
   const sales: Sale[] = []
   const currentDate = new Date()
 
@@ -45,12 +45,12 @@ const columns: TableColumn<Sale>[] = [
   {
     accessorKey: 'id',
     header: 'ID',
-    cell: ({ row }) => `#${row.getValue('id')}`
+    cell: ({row}) => `#${row.getValue('id')}`
   },
   {
     accessorKey: 'date',
     header: 'Date',
-    cell: ({ row }) => {
+    cell: ({row}) => {
       return new Date(row.getValue('date')).toLocaleString('en-US', {
         day: 'numeric',
         month: 'short',
@@ -63,14 +63,14 @@ const columns: TableColumn<Sale>[] = [
   {
     accessorKey: 'status',
     header: 'Status',
-    cell: ({ row }) => {
+    cell: ({row}) => {
       const color = {
         paid: 'success' as const,
         failed: 'error' as const,
         refunded: 'neutral' as const
       }[row.getValue('status') as string]
 
-      return h(UBadge, { class: 'capitalize', variant: 'subtle', color }, () =>
+      return h(UBadge, {class: 'capitalize', variant: 'subtle', color}, () =>
         row.getValue('status')
       )
     }
@@ -81,8 +81,8 @@ const columns: TableColumn<Sale>[] = [
   },
   {
     accessorKey: 'amount',
-    header: () => h('div', { class: 'text-right' }, 'Amount'),
-    cell: ({ row }) => {
+    header: () => h('div', {class: 'text-right'}, 'Amount'),
+    cell: ({row}) => {
       const amount = Number.parseFloat(row.getValue('amount'))
 
       const formatted = new Intl.NumberFormat('en-US', {
@@ -90,7 +90,7 @@ const columns: TableColumn<Sale>[] = [
         currency: 'EUR'
       }).format(amount)
 
-      return h('div', { class: 'text-right font-medium' }, formatted)
+      return h('div', {class: 'text-right font-medium'}, formatted)
     }
   }
 ]
@@ -98,9 +98,8 @@ const columns: TableColumn<Sale>[] = [
 
 <template>
   <UTable
-    :data="data"
     :columns="columns"
-    class="shrink-0"
+    :data="data"
     :ui="{
       base: 'table-fixed border-separate border-spacing-0',
       thead: '[&>tr]:bg-elevated/50 [&>tr]:after:content-none',
@@ -108,5 +107,6 @@ const columns: TableColumn<Sale>[] = [
       th: 'first:rounded-l-lg last:rounded-r-lg border-y border-default first:border-l last:border-r',
       td: 'border-b border-default'
     }"
+    class="shrink-0"
   />
 </template>

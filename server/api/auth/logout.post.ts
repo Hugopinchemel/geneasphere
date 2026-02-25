@@ -1,7 +1,6 @@
-import { defineEventHandler } from 'h3'
-import { clearUserSession } from '#imports'
+import {defineEventHandler} from 'h3'
 
 export default defineEventHandler(async (event) => {
   await clearUserSession(event)
-  return { ok: true }
+  return {ok: true}
 })

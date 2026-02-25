@@ -4,8 +4,10 @@ declare module '#auth-utils' {
     name: string
     email: string
     avatar?: string
+    theme?: 'light' | 'dark'
+    primaryColor?: string
+    neutralColor?: string
   }
 }
 
 export {}
-

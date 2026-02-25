@@ -1,4 +1,4 @@
-import { createSharedComposable } from '@vueuse/core'
+import {createSharedComposable} from '@vueuse/core'
 
 const _useDashboard = () => {
   const route = useRoute()
@@ -7,6 +7,8 @@ const _useDashboard = () => {
 
   defineShortcuts({
     'g-h': () => router.push('/'),
+    'g-p': () => router.push('/persons'),
+    'g-m': () => router.push('/matrimonial-nodes'),
     'g-i': () => router.push('/inbox'),
     'g-c': () => router.push('/customers'),
     'g-s': () => router.push('/settings'),

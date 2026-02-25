@@ -2,7 +2,8 @@
 
 [![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
 
-Get started with the Nuxt dashboard template with multiple pages, collapsible sidebar, keyboard shortcuts, light & dark mode, command palette and more, powered by [Nuxt UI](https://ui.nuxt.com).
+Get started with the Nuxt dashboard template with multiple pages, collapsible sidebar, keyboard shortcuts, light & dark
+mode, command palette and more, powered by [Nuxt UI](https://ui.nuxt.com).
 
 - [Live demo](https://dashboard-template.nuxt.dev/)
 - [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
@@ -61,4 +62,5 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 
 ## Renovate integration
 
-Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you are good to go.
+Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you
+are good to go.

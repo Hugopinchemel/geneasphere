@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware(async (to) => {
-  const { user, fetch: fetchSession, ready } = useUserSession()
+  const {user, fetch: fetchSession, ready} = useUserSession()
   if (!ready.value) {
     await fetchSession()
   }
