@@ -1,6 +1,6 @@
-import {connectToDB} from '~~/server/utils/db'
-import {MatrimonialNodeModel} from '~~/server/models/MatrimonialNode'
-import {z} from 'zod'
+import { connectToDB } from '~~/server/utils/db'
+import { MatrimonialNodeModel } from '~~/server/models/MatrimonialNode'
+import { z } from 'zod'
 
 const bodySchema = z.object({
   status: z.enum(['marié', 'divorcé', 'pacsé', 'union_libre', 'inconnu']).optional(),
@@ -16,7 +16,7 @@ const bodySchema = z.object({
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   if (!session?.user) {
-    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const id = getRouterParam(event, 'id')
@@ -24,7 +24,7 @@ export default defineEventHandler(async (event) => {
 
   await connectToDB()
 
-  const updateData: Record<string, unknown> = {...body}
+  const updateData: Record<string, unknown> = { ...body }
   if (body.startDate !== undefined) {
     updateData.startDate = body.startDate ? new Date(body.startDate) : null
   }
@@ -33,15 +33,15 @@ export default defineEventHandler(async (event) => {
   }
 
   const node = await MatrimonialNodeModel.findOneAndUpdate(
-    {_id: id, createdBy: session.user.id},
+    { _id: id, createdBy: session.user.id },
     updateData,
-    {new: true}
+    { returnDocument: 'after' }
   )
     .populate('parents')
     .populate('children.person')
 
   if (!node) {
-    throw createError({statusCode: 404, statusMessage: 'Nœud matrimonial introuvable'})
+    throw createError({ statusCode: 404, statusMessage: 'Nœud matrimonial introuvable' })
   }
 
   return node

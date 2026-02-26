@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import type {NavigationMenuItem} from '@nuxt/ui'
 
-const route = useRoute()
 const toast = useToast()
 
 const open = ref(false)
@@ -99,6 +98,7 @@ onMounted(async () => {
       :ui="{ footer: 'lg:border-t lg:border-default' }"
       class="bg-elevated/25"
       collapsible
+      data-sidebar-root
       resizable
     >
       <template #header="{ collapsed }">

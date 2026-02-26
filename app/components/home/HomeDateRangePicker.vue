@@ -100,8 +100,10 @@ const selectRange = (range: { days?: number, months?: number, years?: number }) 
       </span>
 
       <template #trailing>
-        <UIcon class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200"
-               name="i-lucide-chevron-down"/>
+        <UIcon
+          class="shrink-0 text-dimmed size-5 group-data-[state=open]:rotate-180 transition-transform duration-200"
+          name="i-lucide-chevron-down"
+        />
       </template>
     </UButton>
 

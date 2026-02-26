@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type {DropdownMenuItem} from '@nuxt/ui'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 defineProps<{
   collapsed?: boolean
 }>()
 
-const {user} = useUserSession()
+const { user } = useUserSession()
 
 const brandTeam = {
   label: 'Geneasphere',

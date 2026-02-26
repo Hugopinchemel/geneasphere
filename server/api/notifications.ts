@@ -1,4 +1,4 @@
-import {sub} from 'date-fns'
+import { sub } from 'date-fns'
 
 const notifications = [{
   id: 1,
@@ -11,7 +11,7 @@ const notifications = [{
     }
   },
   body: 'sent you a message',
-  date: sub(new Date(), {minutes: 7}).toISOString()
+  date: sub(new Date(), { minutes: 7 }).toISOString()
 }]
 
 export default eventHandler(async () => {

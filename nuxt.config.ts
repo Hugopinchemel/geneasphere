@@ -1,5 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
+  ssr: true,
+
   modules: [
     '@nuxt/eslint',
     '@nuxt/ui',
@@ -7,15 +9,17 @@ export default defineNuxtConfig({
     'nuxt-auth-utils'
   ],
 
-  devtools: {
-    enabled: true
-  },
+  devtools: { enabled: false },
 
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/api/**': {
-      cors: true
+    '/api/**': { cors: true }
+  },
+
+  vite: {
+    optimizeDeps: {
+      include: ['mongoose']
     }
   },
 

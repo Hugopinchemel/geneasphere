@@ -1,21 +1,24 @@
 import mongoose from 'mongoose'
 
-let cached: typeof mongoose | null = null
+// Utiliser le cache global Nitro pour éviter les reconnexions entre hot-reloads dev
+const globalWithMongoose = globalThis as typeof globalThis & { _mongoose?: typeof mongoose }
 
 export async function connectToDB() {
-  if (cached) return cached
+  // Déjà connecté
+  if (mongoose.connection.readyState === 1) return mongoose
+
+  // Cache global (survit aux hot-reloads en dev)
+  if (globalWithMongoose._mongoose) return globalWithMongoose._mongoose
 
   const uri = process.env.MONGODB_URI
-  if (!uri) {
-    throw new Error('MONGODB_URI is not set')
-  }
+  if (!uri) throw new Error('MONGODB_URI is not set')
 
-  if (mongoose.connection.readyState === 1) {
-    cached = mongoose
-    return cached
-  }
+  await mongoose.connect(uri, {
+    maxPoolSize: 10,
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000
+  })
 
-  await mongoose.connect(uri)
-  cached = mongoose
-  return cached
+  globalWithMongoose._mongoose = mongoose
+  return mongoose
 }

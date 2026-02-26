@@ -96,3 +96,16 @@ export interface MatrimonialNode {
   createdAt: string
   updatedAt: string
 }
+
+/** Un nœud de rendu de l'arbre : soit un individu seul, soit un couple */
+export interface TreeGroup {
+  /** Clé unique du groupe (id personne seule, ou "idA__idB" pour un couple) */
+  key: string
+  /** Personnes du groupe (1 ou 2) */
+  persons: Person[]
+  /** Statut matrimonial si couple */
+  coupleStatus?: MatrimonialStatus
+  /** Enfants directs de ce groupe */
+  children: TreeGroup[]
+}
+

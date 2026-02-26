@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import * as z from 'zod'
-import type {FormSubmitEvent} from '@nuxt/ui'
+import type { FormSubmitEvent } from '@nuxt/ui'
 
 const toast = useToast()
 const router = useRouter()
@@ -33,9 +33,9 @@ const state = reactive<Partial<Schema>>({
 })
 
 const sexOptions = [
-  {label: 'Homme', value: 'M'},
-  {label: 'Femme', value: 'F'},
-  {label: 'Autre', value: 'Autre'}
+  { label: 'Homme', value: 'M' },
+  { label: 'Femme', value: 'F' },
+  { label: 'Autre', value: 'Autre' }
 ]
 
 const loading = ref(false)
@@ -47,7 +47,7 @@ async function onPhotoChange(e: Event) {
 
   const file = input.files[0]!
   if (file.size > 5 * 1024 * 1024) {
-    toast.add({title: 'Erreur', description: 'Le fichier est trop volumineux (max 5 Mo)', color: 'error'})
+    toast.add({ title: 'Erreur', description: 'Le fichier est trop volumineux (max 5 Mo)', color: 'error' })
     return
   }
 
@@ -60,9 +60,9 @@ async function onPhotoChange(e: Event) {
       body: formData
     })
     state.photo = result.url
-    toast.add({title: 'Photo uploadée', color: 'success'})
+    toast.add({ title: 'Photo uploadée', color: 'success' })
   } catch {
-    toast.add({title: 'Erreur', description: 'Impossible d\'uploader la photo', color: 'error'})
+    toast.add({ title: 'Erreur', description: 'Impossible d\'uploader la photo', color: 'error' })
   } finally {
     uploading.value = false
   }
@@ -83,10 +83,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       method: 'POST',
       body: event.data
     })
-    toast.add({title: 'Personne créée avec succès', color: 'success'})
+    toast.add({ title: 'Personne créée avec succès', color: 'success' })
     router.push('/persons')
   } catch {
-    toast.add({title: 'Erreur', description: 'Impossible de créer la personne', color: 'error'})
+    toast.add({ title: 'Erreur', description: 'Impossible de créer la personne', color: 'error' })
   } finally {
     loading.value = false
   }
@@ -118,11 +118,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
         >
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Prénom" name="firstName" required>
-              <UInput v-model="state.firstName" class="w-full" placeholder="Jean"/>
+              <UInput v-model="state.firstName" class="w-full" placeholder="Jean" />
             </UFormField>
 
             <UFormField label="Nom" name="lastName">
-              <UInput v-model="state.lastName" class="w-full" placeholder="Dupont"/>
+              <UInput v-model="state.lastName" class="w-full" placeholder="Dupont" />
             </UFormField>
           </div>
 
@@ -173,21 +173,21 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Date de naissance" name="birthDate">
-              <UInput v-model="state.birthDate" class="w-full" type="date"/>
+              <UInput v-model="state.birthDate" class="w-full" type="date" />
             </UFormField>
 
             <UFormField label="Lieu de naissance" name="birthPlace">
-              <UInput v-model="state.birthPlace" class="w-full" placeholder="Paris, France"/>
+              <UInput v-model="state.birthPlace" class="w-full" placeholder="Paris, France" />
             </UFormField>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Date de décès" name="deathDate">
-              <UInput v-model="state.deathDate" class="w-full" type="date"/>
+              <UInput v-model="state.deathDate" class="w-full" type="date" />
             </UFormField>
 
             <UFormField label="Lieu de décès" name="deathPlace">
-              <UInput v-model="state.deathPlace" class="w-full" placeholder="Lyon, France"/>
+              <UInput v-model="state.deathPlace" class="w-full" placeholder="Lyon, France" />
             </UFormField>
           </div>
 

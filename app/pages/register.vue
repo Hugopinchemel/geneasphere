@@ -1,12 +1,12 @@
 <script lang="ts" setup>
-definePageMeta({layout: 'auth'})
+definePageMeta({ layout: 'auth' })
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const loading = ref(false)
-const form = reactive({name: '', email: '', password: ''})
-const {fetch: fetchSession} = useUserSession()
+const form = reactive({ name: '', email: '', password: '' })
+const { fetch: fetchSession } = useUserSession()
 
 async function onSubmit() {
   loading.value = true
@@ -20,7 +20,7 @@ async function onSubmit() {
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
     const msg = e?.data?.statusMessage || 'Registration failed'
-    toast.add({title: 'Sign up failed', description: msg, color: 'error'})
+    toast.add({ title: 'Sign up failed', description: msg, color: 'error' })
   } finally {
     loading.value = false
   }

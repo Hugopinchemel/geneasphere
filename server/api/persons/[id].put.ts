@@ -1,6 +1,6 @@
-import {connectToDB} from '~~/server/utils/db'
-import {PersonModel} from '~~/server/models/Person'
-import {z} from 'zod'
+import { connectToDB } from '~~/server/utils/db'
+import { PersonModel } from '~~/server/models/Person'
+import { z } from 'zod'
 
 const bodySchema = z.object({
   firstName: z.string().min(1, 'Le prénom est requis').optional(),
@@ -17,7 +17,7 @@ const bodySchema = z.object({
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   if (!session?.user) {
-    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const id = getRouterParam(event, 'id')
@@ -25,7 +25,7 @@ export default defineEventHandler(async (event) => {
 
   await connectToDB()
 
-  const updateData: Record<string, unknown> = {...body}
+  const updateData: Record<string, unknown> = { ...body }
   if (body.birthDate !== undefined) {
     updateData.birthDate = body.birthDate ? new Date(body.birthDate) : null
   }
@@ -34,13 +34,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const person = await PersonModel.findOneAndUpdate(
-    {_id: id, createdBy: session.user.id},
+    { _id: id, createdBy: session.user.id },
     updateData,
-    {new: true}
+    { returnDocument: 'after' }
   )
 
   if (!person) {
-    throw createError({statusCode: 404, statusMessage: 'Personne introuvable'})
+    throw createError({ statusCode: 404, statusMessage: 'Personne introuvable' })
   }
 
   return person

@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import * as z from 'zod'
-import type {FormError} from '@nuxt/ui'
+import type { FormError } from '@nuxt/ui'
 
 const toast = useToast()
-const {clear} = useUserSession()
+const { clear } = useUserSession()
 const savingPassword = ref(false)
 const deletingAccount = ref(false)
 
@@ -22,7 +22,7 @@ const passwordForm = reactive<Partial<PasswordSchema>>({
 const validate = (state: Partial<PasswordSchema>): FormError[] => {
   const errors: FormError[] = []
   if (state.currentPassword && state.newPassword && state.currentPassword === state.newPassword) {
-    errors.push({name: 'newPassword', message: 'Passwords must be different'})
+    errors.push({ name: 'newPassword', message: 'Passwords must be different' })
   }
   return errors
 }
@@ -32,14 +32,14 @@ async function onPasswordSubmit() {
   try {
     await $fetch('/api/auth/password', {
       method: 'PUT',
-      body: {current: passwordForm.currentPassword, new: passwordForm.newPassword}
+      body: { current: passwordForm.currentPassword, new: passwordForm.newPassword }
     })
     passwordForm.currentPassword = ''
     passwordForm.newPassword = ''
-    toast.add({title: 'Success', description: 'Password updated.', icon: 'i-lucide-check', color: 'success'})
+    toast.add({ title: 'Success', description: 'Password updated.', icon: 'i-lucide-check', color: 'success' })
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
-    toast.add({title: 'Error', description: e?.data?.statusMessage || 'Failed to update password', color: 'error'})
+    toast.add({ title: 'Error', description: e?.data?.statusMessage || 'Failed to update password', color: 'error' })
   } finally {
     savingPassword.value = false
   }
@@ -48,12 +48,12 @@ async function onPasswordSubmit() {
 async function onDeleteAccount() {
   deletingAccount.value = true
   try {
-    await $fetch('/api/auth/account', {method: 'DELETE'})
+    await $fetch('/api/auth/account', { method: 'DELETE' })
     await clear()
     await navigateTo('/login')
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
-    toast.add({title: 'Error', description: e?.data?.statusMessage || 'Failed to delete account', color: 'error'})
+    toast.add({ title: 'Error', description: e?.data?.statusMessage || 'Failed to delete account', color: 'error' })
     deletingAccount.value = false
   }
 }

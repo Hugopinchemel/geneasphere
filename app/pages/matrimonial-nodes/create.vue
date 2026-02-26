@@ -1,13 +1,16 @@
 <script lang="ts" setup>
 import * as z from 'zod'
-import type {FormSubmitEvent} from '@nuxt/ui'
-import type {Person} from '~/types'
+import type { FormSubmitEvent } from '@nuxt/ui'
+import type { Person } from '~/types'
 
 const toast = useToast()
 const router = useRouter()
 const headers = useRequestHeaders(['cookie'])
 
-const {data: persons} = await useFetch<Person[]>('/api/persons', {headers})
+const { data: persons } = useFetch<Person[]>('/api/persons', {
+  headers: headers as Record<string, string>,
+  default: () => [] as Person[]
+})
 
 const personOptions = computed(() =>
   (persons.value || []).map(p => ({
@@ -17,17 +20,17 @@ const personOptions = computed(() =>
 )
 
 const statusOptions = [
-  {label: 'Marié(e)', value: 'marié'},
-  {label: 'Divorcé(e)', value: 'divorcé'},
-  {label: 'Pacsé(e)', value: 'pacsé'},
-  {label: 'Union libre', value: 'union_libre'},
-  {label: 'Inconnu', value: 'inconnu'}
+  { label: 'Marié(e)', value: 'marié' },
+  { label: 'Divorcé(e)', value: 'divorcé' },
+  { label: 'Pacsé(e)', value: 'pacsé' },
+  { label: 'Union libre', value: 'union_libre' },
+  { label: 'Inconnu', value: 'inconnu' }
 ]
 
 const linkTypeOptions = [
-  {label: 'Biologique', value: 'biologique'},
-  {label: 'Adoption', value: 'adoption'},
-  {label: 'GPA', value: 'gpa'}
+  { label: 'Biologique', value: 'biologique' },
+  { label: 'Adoption', value: 'adoption' },
+  { label: 'GPA', value: 'gpa' }
 ]
 
 const schema = z.object({
@@ -52,7 +55,7 @@ const state = reactive<Partial<Schema>>({
 })
 
 function addChild() {
-  state.children.push({person: '', linkType: 'biologique'})
+  state.children.push({ person: '', linkType: 'biologique' })
 }
 
 function removeChild(index: number) {
@@ -78,10 +81,10 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
       method: 'POST',
       body: event.data
     })
-    toast.add({title: 'Nœud matrimonial créé', color: 'success'})
+    toast.add({ title: 'Nœud matrimonial créé', color: 'success' })
     await router.push('/matrimonial-nodes')
   } catch {
-    toast.add({title: 'Erreur', description: 'Impossible de créer le nœud', color: 'error'})
+    toast.add({ title: 'Erreur', description: 'Impossible de créer le nœud', color: 'error' })
   } finally {
     loading.value = false
   }
@@ -122,11 +125,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Date de début" name="startDate">
-              <UInput v-model="state.startDate" class="w-full" type="date"/>
+              <UInput v-model="state.startDate" class="w-full" type="date" />
             </UFormField>
 
             <UFormField label="Date de fin" name="endDate">
-              <UInput v-model="state.endDate" class="w-full" type="date"/>
+              <UInput v-model="state.endDate" class="w-full" type="date" />
             </UFormField>
           </div>
 
