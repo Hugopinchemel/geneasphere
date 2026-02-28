@@ -1,66 +1,131 @@
-# Nuxt Dashboard Template
+# GeneaSphere 🌳
 
 [![Nuxt UI](https://img.shields.io/badge/Made%20with-Nuxt%20UI-00DC82?logo=nuxt&labelColor=020420)](https://ui.nuxt.com)
+[![Nuxt](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxt&labelColor=020420)](https://nuxt.com)
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&labelColor=020420)](https://www.mongodb.com)
 
-Get started with the Nuxt dashboard template with multiple pages, collapsible sidebar, keyboard shortcuts, light & dark
-mode, command palette and more, powered by [Nuxt UI](https://ui.nuxt.com).
+**GeneaSphere** est une application web de généalogie permettant de créer, visualiser et gérer des arbres généalogiques interactifs. Elle repose sur [Nuxt 4](https://nuxt.com), [Nuxt UI](https://ui.nuxt.com) et [MongoDB](https://www.mongodb.com) via Mongoose.
 
-- [Live demo](https://dashboard-template.nuxt.dev/)
-- [Documentation](https://ui.nuxt.com/docs/getting-started/installation/nuxt)
+---
 
-<a href="https://dashboard-template.nuxt.dev/" target="_blank">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://ui.nuxt.com/assets/templates/nuxt/dashboard-dark.png">
-    <source media="(prefers-color-scheme: light)" srcset="https://ui.nuxt.com/assets/templates/nuxt/dashboard-light.png">
-    <img alt="Nuxt Dashboard Template" src="https://ui.nuxt.com/assets/templates/nuxt/dashboard-light.png">
-  </picture>
-</a>
+## Fonctionnalités
 
-> The dashboard template for Vue is on https://github.com/nuxt-ui-templates/dashboard-vue.
+- 👤 **Gestion des personnes** — Créez des profils avec prénom, nom, sexe, dates et lieux de naissance/décès, photo et notes.
+- 💑 **Nœuds matrimoniaux** — Reliez des personnes en couples (marié, divorcé, pacsé, union libre…) et associez-leur des enfants (biologiques, adoption, GPA).
+- 🌳 **Arbre généalogique interactif** — Visualisez les relations sous forme d'arbre hiérarchique, avec fusion automatique des couples.
+- 🔎 **Sélection dynamique** — Choisissez les personnes à afficher dans l'arbre via une modale dédiée.
+- 🔐 **Authentification** — Inscription, connexion, gestion du profil, mot de passe et suppression de compte.
+- 📨 **Messagerie interne** — Boîte de réception intégrée.
+- 🔔 **Notifications** — Panneau latéral de notifications en temps réel.
+- 🌗 **Thème clair / sombre** — Support natif via Nuxt UI.
 
-## Quick Start
+---
 
-```bash [Terminal]
-npm create nuxt@latest -- -t github:nuxt-ui-templates/dashboard
+## Stack technique
+
+| Couche | Technologie |
+|---|---|
+| Framework | [Nuxt 4](https://nuxt.com) + Vue 3 |
+| UI | [Nuxt UI v4](https://ui.nuxt.com) + Tailwind CSS v4 |
+| Base de données | MongoDB via [Mongoose](https://mongoosejs.com) |
+| Auth | [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils) |
+| Visualisation | [@unovis/vue](https://unovis.dev) |
+| Utilitaires | VueUse, date-fns, Zod |
+| Package manager | [pnpm](https://pnpm.io) |
+
+---
+
+## Structure du projet
+
+```
+app/
+├── pages/
+│   ├── index.vue              # Page d'accueil avec arbre généalogique
+│   ├── tree/tidy-tree.vue     # Vue dédiée à l'arbre
+│   ├── persons/               # CRUD des personnes
+│   ├── matrimonial-nodes/     # CRUD des nœuds matrimoniaux
+│   ├── settings/              # Paramètres utilisateur
+│   └── login.vue / register.vue
+├── components/
+│   ├── TreeNode.vue           # Composant de rendu d'un nœud d'arbre
+│   └── ...
+├── composables/
+│   ├── useTreeBuilder.ts      # Construction de la forêt généalogique
+│   └── useDashboard.ts
+├── types/index.d.ts           # Types TypeScript (Person, MatrimonialNode, TreeGroup…)
+server/
+├── api/
+│   ├── persons/               # API REST personnes
+│   ├── matrimonial-nodes/     # API REST nœuds matrimoniaux
+│   └── auth/                  # API d'authentification
+└── models/                    # Modèles Mongoose
 ```
 
-## Deploy your own
+---
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-name=dashboard&repository-url=https%3A%2F%2Fgithub.com%2Fnuxt-ui-templates%2Fdashboard&demo-image=https%3A%2F%2Fui.nuxt.com%2Fassets%2Ftemplates%2Fnuxt%2Fdashboard-dark.png&demo-url=https%3A%2F%2Fdashboard-template.nuxt.dev%2F&demo-title=Nuxt%20Dashboard%20Template&demo-description=A%20dashboard%20template%20with%20multi-column%20layout%20for%20building%20sophisticated%20admin%20interfaces.)
+## Prérequis
 
-## Setup
+- [Node.js](https://nodejs.org) ≥ 20
+- [pnpm](https://pnpm.io) ≥ 10
+- Une instance [MongoDB](https://www.mongodb.com) accessible
 
-Make sure to install the dependencies:
+---
+
+## Installation
 
 ```bash
 pnpm install
 ```
 
-## Development Server
+Créez un fichier `.env` à la racine et configurez les variables nécessaires :
 
-Start the development server on `http://localhost:3000`:
+```env
+MONGODB_URI=mongodb://localhost:27017/geneasphere
+NUXT_SESSION_PASSWORD=your-secret-session-password
+```
+
+---
+
+## Serveur de développement
 
 ```bash
 pnpm dev
 ```
 
+L'application sera disponible sur `http://localhost:3000`.
+
+---
+
 ## Production
 
-Build the application for production:
+Compilez l'application :
 
 ```bash
 pnpm build
 ```
 
-Locally preview production build:
+Prévisualisez le build en local :
 
 ```bash
 pnpm preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+Démarrez le serveur de production :
 
-## Renovate integration
+```bash
+pnpm start
+```
 
-Install [Renovate GitHub app](https://github.com/apps/renovate/installations/select_target) on your repository and you
-are good to go.
+Consultez la [documentation de déploiement Nuxt](https://nuxt.com/docs/getting-started/deployment) pour plus d'informations.
+
+---
+
+## Intégration Renovate
+
+Installez l'[application GitHub Renovate](https://github.com/apps/renovate/installations/select_target) sur votre dépôt pour maintenir les dépendances à jour automatiquement.
+
+---
+
+## Licence
+
+[MIT](./LICENSE)

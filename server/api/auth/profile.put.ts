@@ -37,18 +37,13 @@ export default defineEventHandler(async (event) => {
     avatar: user.avatar || '',
     theme: user.theme || 'dark',
     primaryColor: user.primaryColor || 'green',
-    neutralColor: user.neutralColor || 'zinc'
+    neutralColor: user.neutralColor || 'zinc',
+    currentTeamId: user.currentTeamId || ''
   }
   await setUserSession(event, { user: safeUser })
 
   return {
-    id: user._id.toString(),
-    name: user.name,
-    email: user.email,
-    avatar: user.avatar || '',
-    bio: user.bio || '',
-    theme: user.theme || 'dark',
-    primaryColor: user.primaryColor || 'green',
-    neutralColor: user.neutralColor || 'zinc'
+    ...safeUser,
+    bio: user.bio || ''
   }
 })

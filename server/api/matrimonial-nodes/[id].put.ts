@@ -1,5 +1,7 @@
+import { createError, defineEventHandler, getRouterParam, readValidatedBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
 import { MatrimonialNodeModel } from '~~/server/models/MatrimonialNode'
+import { TeamModel } from '~~/server/models/Team'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -14,8 +16,8 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
-  if (!session?.user) {
+  const { user } = await getUserSession(event)
+  if (!user) {
     throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
@@ -23,6 +25,9 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBody(event, bodySchema.parse)
 
   await connectToDB()
+
+  const myTeams = await TeamModel.find({ members: user.id }).select('_id')
+  const myTeamIds = myTeams.map(t => t._id)
 
   const updateData: Record<string, unknown> = { ...body }
   if (body.startDate !== undefined) {
@@ -33,7 +38,13 @@ export default defineEventHandler(async (event) => {
   }
 
   const node = await MatrimonialNodeModel.findOneAndUpdate(
-    { _id: id, createdBy: session.user.id },
+    {
+      _id: id,
+      $or: [
+        { teamId: { $in: myTeamIds } },
+        { createdBy: user.id }
+      ]
+    },
     updateData,
     { returnDocument: 'after' }
   )

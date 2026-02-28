@@ -44,8 +44,9 @@ watch(searchQuery, (v) => {
 function addPerson(person: Person) {
   const id = getId(person)
   if (!treePersonIds.value.includes(id)) {
-    treePersonIds.value = [...treePersonIds.value, id]
-    toast.add({ title: `${person.firstName} ${person.lastName} ajouté(e)`, color: 'success' })
+    const connected = findConnectedIds([id], allRelations.value ?? [])
+    treePersonIds.value = Array.from(new Set([...treePersonIds.value, ...connected]))
+    toast.add({ title: `${person.firstName} ${person.lastName} et sa famille ajoutés`, color: 'success' })
   }
   searchQuery.value = ''
   showResults.value = false
@@ -77,11 +78,20 @@ function sexColor(sex: string) {
   return 'text-dimmed'
 }
 
-const { buildTree, getId } = useTreeBuilder()
+const { buildTree, findConnectedIds, getId } = useTreeBuilder()
 
 const treeGroups = computed(() =>
   buildTree(treePersons.value, allRelations.value ?? [])
 )
+
+// ─── Sunburst ───────────────────────────────────────────────────────────────
+const selectedPersonForSunburst = ref<Person | null>(null)
+const isSunburstModalOpen = ref(false)
+
+function openSunburst(person: Person) {
+  selectedPersonForSunburst.value = person
+  isSunburstModalOpen.value = true
+}
 
 const isLoading = computed(() =>
   personsStatus.value === 'pending' || relationsStatus.value === 'pending'
@@ -212,16 +222,33 @@ const isLoading = computed(() =>
                   </span>
                 </div>
                 <UIcon :class="sexColor(person.sex)" :name="sexIcon(person.sex)" class="shrink-0" />
-                <UButton
-                  color="neutral"
-                  icon="i-lucide-x"
-                  size="xs"
-                  variant="ghost"
-                  @click="removePerson(getId(person))"
-                />
+                <div class="flex gap-1">
+                  <UButton
+                    color="primary"
+                    icon="i-lucide-git-fork"
+                    size="xs"
+                    variant="ghost"
+                    @click="openSunburst(person)"
+                  />
+                  <UButton
+                    color="neutral"
+                    icon="i-lucide-x"
+                    size="xs"
+                    variant="ghost"
+                    @click="removePerson(getId(person))"
+                  />
+                </div>
               </div>
             </div>
           </UCard>
+
+          <!-- Modal Sunburst -->
+          <SunburstModal
+            v-model:open="isSunburstModalOpen"
+            :all-persons="allPersons || []"
+            :all-relations="allRelations || []"
+            :person="selectedPersonForSunburst"
+          />
 
           <!-- Arbre -->
           <UCard v-if="treePersons.length > 0" variant="subtle">
@@ -245,6 +272,7 @@ const isLoading = computed(() =>
                   v-for="group in treeGroups"
                   :key="group.key"
                   :group="group"
+                  @click-person="openSunburst"
                 />
               </div>
             </div>

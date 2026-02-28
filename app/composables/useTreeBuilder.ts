@@ -25,7 +25,7 @@ export function useTreeBuilder() {
       return (rel.parents ?? []).some(p => personIds.has(getId(p)))
     })
 
-    const groupChildren: Record<string, string[]> = {}
+    const groupChildren: Record<string, { id: string, type: ChildLinkType }[]> = {}
     const groupPersons: Record<string, Person[]> = {}
     const groupStatus: Record<string, MatrimonialStatus> = {}
 
@@ -34,28 +34,36 @@ export function useTreeBuilder() {
 
     relevantRelations.forEach((rel) => {
       const parentIds = (rel.parents ?? []).map(getId).filter(id => id && personIds.has(id))
-      if (parentIds.length === 0) return
 
       let key: string
+      // Toujours utiliser l'id de la relation pour permettre plusieurs relations pour un même couple (Point 3)
+      key = `rel_${rel._id}`
+
       if (parentIds.length >= 2) {
-        // Couple : trier pour clé stable
         const sorted = [...parentIds].sort()
-        key = sorted.join('__')
         sorted.forEach(id => inCouple.add(id))
         groupPersons[key] = sorted.map(id => personMap[id]).filter((p): p is Person => Boolean(p))
         groupStatus[key] = rel.status
+      } else if (parentIds.length === 1) {
+        key = parentIds[0]! // Garder l'id de la personne pour les nœuds solo ?
+        // Non, si on veut plusieurs relations pour un parent solo, il faut aussi une clé unique.
+        key = `rel_solo_${rel._id}`
+        groupPersons[key] = [personMap[parentIds[0]!]!].filter((p): p is Person => Boolean(p))
+        groupStatus[key] = rel.status
       } else {
-        // Un seul parent connu dans la sélection
-        key = parentIds[0]!
-        if (!groupPersons[key]) {
-          groupPersons[key] = [personMap[key]!].filter((p): p is Person => Boolean(p))
-        }
+        // Parents vides (Point 2)
+        key = `rel_empty_${rel._id}`
+        groupPersons[key] = []
+        groupStatus[key] = rel.status
       }
 
-      const childIds = (rel.children ?? []).map(c => getId(c.person)).filter(id => id && personIds.has(id))
+      const children = (rel.children ?? [])
+        .map(c => ({ id: getId(c.person), type: c.linkType ?? 'biologique' }))
+        .filter(c => c.id && personIds.has(c.id))
+
       if (!groupChildren[key]) groupChildren[key] = []
-      childIds.forEach((cid) => {
-        if (!groupChildren[key]!.includes(cid)) groupChildren[key]!.push(cid)
+      children.forEach((child) => {
+        if (!groupChildren[key]!.some(c => c.id === child.id)) groupChildren[key]!.push(child)
       })
     })
 
@@ -68,30 +76,36 @@ export function useTreeBuilder() {
     })
 
     // Tous les ids enfants (pour trouver les racines)
-    const allChildIds = new Set<string>(Object.values(groupChildren).flat())
+    const allChildIds = new Set<string>(Object.values(groupChildren).flat().map(c => c.id))
 
     // Une clé de groupe est racine si aucune des personnes du groupe n'est enfant
     function isRoot(key: string): boolean {
-      return (groupPersons[key] ?? []).every(p => !allChildIds.has(getId(p)))
+      const persons = groupPersons[key] ?? []
+      if (persons.length === 0) return true // Un groupe vide est forcément une racine (Point 2)
+      return persons.every(p => !allChildIds.has(getId(p)))
     }
 
     // Construire récursivement un TreeGroup depuis une clé groupe
     const built = new Set<string>()
     function buildGroup(key: string): TreeGroup {
       built.add(key)
-      const childGroupKeys = new Set<string>()
-      ;(groupChildren[key] ?? []).forEach((childId) => {
-        const groupKey = findGroupKey(childId, groupPersons)
-        if (groupKey) childGroupKeys.add(groupKey)
+      const childrenEntries: { node: TreeGroup, linkType: ChildLinkType }[] = []
+
+      ;(groupChildren[key] ?? []).forEach((childInfo) => {
+        const groupKey = findGroupKey(childInfo.id, groupPersons)
+        if (groupKey && !built.has(groupKey)) {
+          childrenEntries.push({
+            node: buildGroup(groupKey),
+            linkType: childInfo.type
+          })
+        }
       })
 
       return {
         key,
         persons: groupPersons[key] ?? [],
         coupleStatus: groupStatus[key],
-        children: [...childGroupKeys]
-          .filter(k => k !== key)
-          .map(k => buildGroup(k))
+        children: childrenEntries
       }
     }
 
@@ -99,7 +113,37 @@ export function useTreeBuilder() {
     return roots.map(k => buildGroup(k))
   }
 
-  return { buildTree, getId }
+  /**
+   * Récupère récursivement tous les ids des personnes liées (parents, conjoints, enfants)
+   * à partir d'un ensemble d'ids de départ.
+   */
+  function findConnectedIds(startIds: string[], relations: MatrimonialNode[]): string[] {
+    const connected = new Set<string>(startIds)
+    let added = true
+
+    while (added) {
+      added = false
+      relations.forEach((rel) => {
+        const parents = (rel.parents ?? []).map(getId)
+        const children = (rel.children ?? []).map(c => getId(c.person))
+        const allInRel = [...parents, ...children]
+
+        const hasOverlap = allInRel.some(id => connected.has(id))
+        if (hasOverlap) {
+          allInRel.forEach((id) => {
+            if (id && !connected.has(id)) {
+              connected.add(id)
+              added = true
+            }
+          })
+        }
+      })
+    }
+
+    return Array.from(connected)
+  }
+
+  return { buildTree, findConnectedIds, getId }
 }
 
 function findGroupKey(

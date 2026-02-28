@@ -61,7 +61,7 @@ export interface Range {
 
 // Généalogie
 export type Sex = 'M' | 'F' | 'Autre'
-export type MatrimonialStatus = 'marié' | 'divorcé' | 'pacsé' | 'union_libre' | 'inconnu'
+export type MatrimonialStatus = 'marié' | 'divorcé' | 'pacsé' | 'union' | 'union_libre' | 'inconnu'
 export type ChildLinkType = 'biologique' | 'adoption' | 'gpa'
 
 export interface Person {
@@ -75,6 +75,7 @@ export interface Person {
   deathPlace?: string
   photo?: string
   notes?: string
+  teamId: string
   createdBy: string
   createdAt: string
   updatedAt: string
@@ -92,7 +93,24 @@ export interface MatrimonialNode {
   endDate?: string | null
   parents: (string | Person)[]
   children: MatrimonialChild[]
+  teamId: string
   createdBy: string
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TeamMember {
+  _id: string
+  name: string
+  email: string
+  avatar?: string
+}
+
+export interface Team {
+  _id: string
+  name: string
+  owner: string
+  members: (string | TeamMember)[]
   createdAt: string
   updatedAt: string
 }
@@ -105,7 +123,10 @@ export interface TreeGroup {
   persons: Person[]
   /** Statut matrimonial si couple */
   coupleStatus?: MatrimonialStatus
-  /** Enfants directs de ce groupe */
-  children: TreeGroup[]
+  /** Enfants directs de ce groupe avec type de lien */
+  children: {
+    node: TreeGroup
+    linkType: ChildLinkType
+  }[]
 }
 

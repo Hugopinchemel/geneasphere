@@ -12,6 +12,7 @@ export interface IUser {
   theme?: 'light' | 'dark'
   primaryColor?: string
   neutralColor?: string
+  currentTeamId?: string
   createdAt?: Date
   updatedAt?: Date
 }
@@ -24,7 +25,8 @@ const UserSchema = new Schema<IUser>({
   bio: { type: String, default: '' },
   theme: { type: String, enum: ['light', 'dark'], default: 'dark' },
   primaryColor: { type: String, default: 'green' },
-  neutralColor: { type: String, default: 'zinc' }
+  neutralColor: { type: String, default: 'zinc' },
+  currentTeamId: { type: String, default: '' }
 }, { timestamps: true })
 
 export const UserModel: Model<IUser> = models.User || model<IUser>('User', UserSchema)

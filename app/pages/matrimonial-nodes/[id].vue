@@ -18,6 +18,8 @@ const { data: persons } = useFetch<Person[]>('/api/persons', {
   default: () => [] as Person[]
 })
 
+const { isLockedByOther, lockOwner } = useLocks(computed(() => id))
+
 function toDateInput(date?: string | null) {
   if (!date) return null
   return new Date(date).toISOString().split('T')[0]
@@ -59,6 +61,7 @@ const statusOptions = [
   { label: 'Marié(e)', value: 'marié' },
   { label: 'Divorcé(e)', value: 'divorcé' },
   { label: 'Pacsé(e)', value: 'pacsé' },
+  { label: 'Union', value: 'union' },
   { label: 'Union libre', value: 'union_libre' },
   { label: 'Inconnu', value: 'inconnu' }
 ]
@@ -70,7 +73,7 @@ const linkTypeOptions = [
 ]
 
 const schema = z.object({
-  status: z.enum(['marié', 'divorcé', 'pacsé', 'union_libre', 'inconnu']),
+  status: z.enum(['marié', 'divorcé', 'pacsé', 'union', 'union_libre', 'inconnu']),
   startDate: z.string().optional().nullable(),
   endDate: z.string().optional().nullable(),
   parents: z.array(z.string()).max(2, 'Maximum 2 parents'),
@@ -170,6 +173,14 @@ async function onDelete() {
         />
       </div>
       <div v-else class="max-w-2xl mx-auto p-6">
+        <UAlert
+          v-if="isLockedByOther"
+          :description="`Cette ressource est actuellement en cours de modification par ${lockOwner}.`"
+          class="mb-6"
+          color="warning"
+          icon="i-lucide-lock"
+          title="Ressource verrouillée"
+        />
         <UForm
           :schema="schema"
           :state="state"
@@ -279,7 +290,12 @@ async function onDelete() {
               to="/matrimonial-nodes"
               variant="subtle"
             />
-            <UButton :loading="loading" label="Enregistrer" type="submit" />
+            <UButton
+              :disabled="isLockedByOther"
+              :loading="loading"
+              label="Enregistrer"
+              type="submit"
+            />
           </div>
         </UForm>
       </div>

@@ -1,6 +1,7 @@
 import { createError, defineEventHandler, readBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
+import { TeamModel } from '~~/server/models/Team'
 import { hash } from 'bcryptjs'
 
 export default defineEventHandler(async (event) => {
@@ -24,6 +25,17 @@ export default defineEventHandler(async (event) => {
   const passwordHash = await hash(password, 10)
   const user = await UserModel.create({ name, email, password: passwordHash })
 
+  // Création d'une team par défaut pour l'utilisateur
+  const team = await TeamModel.create({
+    name: `Généalogie de ${user.name}`,
+    owner: user._id,
+    members: [user._id]
+  })
+
+  // Mise à jour de l'utilisateur avec sa team actuelle
+  user.currentTeamId = team._id.toString()
+  await user.save()
+
   const safeUser = {
     id: user._id.toString(),
     name: user.name,
@@ -31,7 +43,8 @@ export default defineEventHandler(async (event) => {
     avatar: '',
     theme: 'dark' as const,
     primaryColor: 'green',
-    neutralColor: 'zinc'
+    neutralColor: 'zinc',
+    currentTeamId: team._id.toString()
   }
   await setUserSession(event, { user: safeUser })
   return { user: safeUser }

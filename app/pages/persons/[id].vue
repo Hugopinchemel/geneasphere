@@ -15,6 +15,8 @@ const { data: person, status: personStatus, refresh } = useFetch<Person>(`/api/p
   default: () => null as Person | null
 })
 
+const { isLockedByOther, lockOwner } = useLocks(computed(() => id))
+
 const schema = z.object({
   firstName: z.string().min(1, 'Le prénom est requis'),
   lastName: z.string().optional().default(''),
@@ -173,6 +175,14 @@ async function onDelete() {
         />
       </div>
       <div v-else class="max-w-2xl mx-auto p-6">
+        <UAlert
+          v-if="isLockedByOther"
+          :description="`Cette ressource est actuellement en cours de modification par ${lockOwner}.`"
+          class="mb-6"
+          color="warning"
+          icon="i-lucide-lock"
+          title="Ressource verrouillée"
+        />
         <UForm
           :schema="schema"
           :state="state"
@@ -271,6 +281,7 @@ async function onDelete() {
               variant="subtle"
             />
             <UButton
+              :disabled="isLockedByOther"
               :loading="loading"
               label="Enregistrer"
               type="submit"

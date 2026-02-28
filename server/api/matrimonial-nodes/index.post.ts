@@ -1,6 +1,8 @@
-import {connectToDB} from '~~/server/utils/db'
-import {MatrimonialNodeModel} from '~~/server/models/MatrimonialNode'
-import {z} from 'zod'
+import { createError, defineEventHandler, readValidatedBody } from 'h3'
+import { connectToDB } from '~~/server/utils/db'
+import { MatrimonialNodeModel } from '~~/server/models/MatrimonialNode'
+import { TeamModel } from '~~/server/models/Team'
+import { z } from 'zod'
 
 const bodySchema = z.object({
   status: z.enum(['marié', 'divorcé', 'pacsé', 'union_libre', 'inconnu']).default('inconnu'),
@@ -14,20 +16,34 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await getUserSession(event)
-  if (!session?.user) {
-    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
+  const { user } = await getUserSession(event)
+  if (!user) {
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const body = await readValidatedBody(event, bodySchema.parse)
 
   await connectToDB()
 
+  let teamId = user.currentTeamId
+
+  if (!teamId) {
+    const team = await TeamModel.findOne({ members: user.id })
+    if (team) {
+      teamId = team._id.toString()
+    }
+  }
+
+  if (!teamId) {
+    throw createError({ statusCode: 400, statusMessage: 'No team selected' })
+  }
+
   const node = await MatrimonialNodeModel.create({
     ...body,
     startDate: body.startDate ? new Date(body.startDate) : undefined,
     endDate: body.endDate ? new Date(body.endDate) : undefined,
-    createdBy: session.user.id
+    teamId,
+    createdBy: user.id
   })
 
   return node.populate(['parents', 'children.person'] as string[])
