@@ -1,11 +1,11 @@
 <script lang="ts" setup>
-import type { MatrimonialNode, Person } from '~/types'
-import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
+import type {MatrimonialNode, Person} from '~/types'
+import type {DropdownMenuItem, TableColumn} from '@nuxt/ui'
 
 const toast = useToast()
 const headers = useRequestHeaders(['cookie'])
 
-const { data: nodes, status, refresh } = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
+const {data: nodes, status, refresh} = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
   headers: headers as Record<string, string>,
   default: () => [] as MatrimonialNode[]
 })
@@ -37,21 +37,21 @@ function formatDate(date?: string | null) {
 }
 
 const columns: TableColumn<MatrimonialNode>[] = [
-  { accessorKey: 'status', header: 'Statut' },
-  { accessorKey: 'parents', header: 'Parents' },
-  { accessorKey: 'children', header: 'Enfants' },
-  { accessorKey: 'startDate', header: 'Début' },
-  { accessorKey: 'endDate', header: 'Fin' },
-  { accessorKey: '_id', header: 'Actions' }
+  {accessorKey: 'status', header: 'Statut'},
+  {accessorKey: 'parents', header: 'Parents'},
+  {accessorKey: 'children', header: 'Enfants'},
+  {accessorKey: 'startDate', header: 'Début'},
+  {accessorKey: 'endDate', header: 'Fin'},
+  {accessorKey: '_id', header: 'Actions'}
 ]
 
 async function deleteNode(id: string) {
   try {
-    await $fetch(`/api/matrimonial-nodes/${id}`, { method: 'DELETE' })
-    toast.add({ title: 'Nœud supprimé', color: 'success' })
+    await $fetch(`/api/matrimonial-nodes/${id}`, {method: 'DELETE'})
+    toast.add({title: 'Nœud supprimé', color: 'success'})
     await refresh()
   } catch {
-    toast.add({ title: 'Erreur lors de la suppression', color: 'error' })
+    toast.add({title: 'Erreur lors de la suppression', color: 'error'})
   }
 }
 
@@ -78,7 +78,7 @@ function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
     <template #header>
       <UDashboardNavbar :ui="{ right: 'gap-3' }" title="Nœuds matrimoniaux">
         <template #leading>
-          <UDashboardSidebarCollapse />
+          <UDashboardSidebarCollapse/>
         </template>
 
         <template #right>
@@ -93,7 +93,7 @@ function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
 
     <template #body>
       <div v-if="status === 'pending'" class="flex justify-center py-16">
-        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
+        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2"/>
       </div>
       <div v-else-if="nodes?.length" class="flex flex-col gap-4 p-4">
         <UTable :columns="columns" :data="nodes">
@@ -145,7 +145,7 @@ function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
         </UTable>
       </div>
       <div v-else class="flex flex-col items-center justify-center gap-4 p-12">
-        <UIcon class="size-12 text-dimmed" name="i-lucide-heart" />
+        <UIcon class="size-12 text-dimmed" name="i-lucide-heart"/>
         <p class="text-muted text-lg">
           Aucun nœud matrimonial
         </p>

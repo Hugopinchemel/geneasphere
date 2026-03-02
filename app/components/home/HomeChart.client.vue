@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, format } from 'date-fns'
-import { VisArea, VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer } from '@unovis/vue'
-import type { Period, Range } from '~/types'
+import {eachDayOfInterval, eachMonthOfInterval, eachWeekOfInterval, format} from 'date-fns'
+import {VisArea, VisAxis, VisCrosshair, VisLine, VisTooltip, VisXYContainer} from '@unovis/vue'
+import type {Period, Range} from '~/types'
 
 const cardRef = useTemplateRef<HTMLElement | null>('cardRef')
 
@@ -15,7 +15,7 @@ type DataRecord = {
   amount: number
 }
 
-const { width } = useElementSize(cardRef)
+const {width} = useElementSize(cardRef)
 
 const data = ref<DataRecord[]>([])
 
@@ -29,15 +29,15 @@ watch([() => props.period, () => props.range], () => {
   const min = 1000
   const max = 10000
 
-  data.value = dates.map(date => ({ date, amount: Math.floor(Math.random() * (max - min + 1)) + min }))
-}, { immediate: true })
+  data.value = dates.map(date => ({date, amount: Math.floor(Math.random() * (max - min + 1)) + min}))
+}, {immediate: true})
 
 const x = (_: DataRecord, i: number) => i
 const y = (d: DataRecord) => d.amount
 
-const total = computed(() => data.value.reduce((acc: number, { amount }) => acc + amount, 0))
+const total = computed(() => data.value.reduce((acc: number, {amount}) => acc + amount, 0))
 
-const formatNumber = new Intl.NumberFormat('en', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format
+const formatNumber = new Intl.NumberFormat('en', {style: 'currency', currency: 'USD', maximumFractionDigits: 0}).format
 
 const formatDate = (date: Date): string => {
   return ({
@@ -100,7 +100,7 @@ const template = (d: DataRecord) => `${formatDate(d.date)}: ${formatNumber(d.amo
         color="var(--ui-primary)"
       />
 
-      <VisTooltip />
+      <VisTooltip/>
     </VisXYContainer>
   </UCard>
 </template>

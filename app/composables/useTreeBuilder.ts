@@ -1,4 +1,4 @@
-import type { MatrimonialNode, MatrimonialStatus, Person, TreeGroup } from '~/types'
+import type {MatrimonialNode, MatrimonialStatus, Person, TreeGroup} from '~/types'
 
 export function useTreeBuilder() {
   function getId(v: unknown): string {
@@ -58,7 +58,7 @@ export function useTreeBuilder() {
       }
 
       const children = (rel.children ?? [])
-        .map(c => ({ id: getId(c.person), type: c.linkType ?? 'biologique' }))
+        .map(c => ({id: getId(c.person), type: c.linkType ?? 'biologique'}))
         .filter(c => c.id && personIds.has(c.id))
 
       if (!groupChildren[key]) groupChildren[key] = []
@@ -87,6 +87,7 @@ export function useTreeBuilder() {
 
     // Construire récursivement un TreeGroup depuis une clé groupe
     const built = new Set<string>()
+
     function buildGroup(key: string): TreeGroup {
       built.add(key)
       const childrenEntries: { node: TreeGroup, linkType: ChildLinkType }[] = []
@@ -143,7 +144,7 @@ export function useTreeBuilder() {
     return Array.from(connected)
   }
 
-  return { buildTree, findConnectedIds, getId }
+  return {buildTree, findConnectedIds, getId}
 }
 
 function findGroupKey(

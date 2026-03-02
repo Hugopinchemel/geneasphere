@@ -1,26 +1,52 @@
 <script lang="ts" setup>
-definePageMeta({ layout: 'auth' })
+definePageMeta({layout: 'auth'})
 
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const loading = ref(false)
-const form = reactive({ email: '', password: '' })
-const { fetch: fetchSession } = useUserSession()
+const fields = [
+  {name: 'email', label: 'Adresse e-mail', type: 'email', placeholder: 'vous@exemple.com', required: true},
+  {name: 'password', label: 'Mot de passe', type: 'password', placeholder: '••••••••', required: true}
+]
+const providers = [
+  {
+    label: 'Continuer avec Google',
+    icon: 'i-simple-icons-google',
+    color: 'neutral' as const,
+    onClick: () => { window.location.href = '/auth/google' }
+  }
+]
+const {fetch: fetchSession} = useUserSession()
 
-async function onSubmit() {
+const oauthErrorMessages: Record<string, string> = {
+  google: 'Échec de la connexion Google. Vérifiez la console serveur pour les détails.',
+  server: 'Erreur serveur lors de la connexion Google.',
+  no_email: 'Google n\'a pas fourni d\'adresse e-mail.'
+}
+
+onMounted(() => {
+  const error = route.query.error as string
+  if (error) {
+    const msg = oauthErrorMessages[error] || `Erreur OAuth : ${error}`
+    toast.add({title: 'Connexion Google échouée', description: msg, color: 'error', duration: 8000})
+    console.error('[Login page] OAuth error from query:', error)
+  }
+})
+
+async function onSubmit(data: Record<string, string>) {
   loading.value = true
   try {
     await $fetch('/api/auth/login', {
       method: 'POST',
-      body: form
+      body: {email: data.email, password: data.password}
     })
     await fetchSession()
     router.replace((route.query.redirect as string) || '/')
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
-    const msg = e?.data?.statusMessage || 'Invalid credentials'
-    toast.add({ title: 'Login failed', description: msg, color: 'error' })
+    const msg = e?.data?.statusMessage || 'Identifiants invalides'
+    toast.add({title: 'Connexion échouée', description: msg, color: 'error'})
   } finally {
     loading.value = false
   }
@@ -29,57 +55,26 @@ async function onSubmit() {
 
 <template>
   <div class="min-h-dvh flex flex-col items-center justify-center p-4 gap-6">
-    <!-- Logo retour -->
+    <!-- Logo -->
     <NuxtLink class="flex items-center gap-2 text-dimmed hover:text-highlighted transition-colors" to="/">
-      <UIcon class="size-5 text-primary" name="i-lucide-git-fork" />
+      <UIcon class="size-5 text-primary" name="i-lucide-git-fork"/>
       <span class="font-semibold text-sm">GeneaSphere</span>
     </NuxtLink>
 
-    <UCard class="w-full max-w-md">
-      <template #header>
-        <div class="flex items-center gap-2">
-          <UIcon class="size-5 text-primary" name="i-lucide-log-in" />
-          <h1 class="text-xl font-semibold">
-            Connexion
-          </h1>
-        </div>
+    <UAuthForm
+      :fields="fields"
+      :loading="loading"
+      :providers="providers"
+      align="top"
+      icon="i-lucide-log-in"
+      submit-button-options-label="Se connecter"
+      title="Connexion"
+      @submit="onSubmit"
+    >
+      <template #description>
+        Pas encore de compte ?
+        <NuxtLink class="text-primary hover:underline font-medium" to="/register">Créer un compte</NuxtLink>
       </template>
-
-      <form
-        class="space-y-4"
-        @submit.prevent="onSubmit"
-      >
-        <UFormField label="Adresse e-mail" name="email">
-          <UInput
-            v-model="form.email"
-            placeholder="vous@exemple.com"
-            required
-            type="email"
-          />
-        </UFormField>
-        <UFormField label="Mot de passe" name="password">
-          <UInput
-            v-model="form.password"
-            placeholder="••••••••"
-            required
-            type="password"
-          />
-        </UFormField>
-        <UButton
-          :loading="loading"
-          block
-          type="submit"
-        >
-          Se connecter
-        </UButton>
-      </form>
-
-      <template #footer>
-        <p class="text-sm text-dimmed">
-          Pas encore de compte ?
-          <NuxtLink class="text-primary hover:underline" to="/register">Créer un compte</NuxtLink>
-        </p>
-      </template>
-    </UCard>
+    </UAuthForm>
   </div>
 </template>

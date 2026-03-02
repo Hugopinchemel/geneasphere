@@ -1,17 +1,17 @@
-import { defineEventHandler, createError, readBody } from 'h3'
-import { connectToDB } from '~~/server/utils/db'
-import { TeamModel } from '~~/server/models/Team'
-import { UserModel } from '~~/server/models/User'
+import {createError, defineEventHandler, readBody} from 'h3'
+import {connectToDB} from '~~/server/utils/db'
+import {TeamModel} from '~~/server/models/Team'
+import {UserModel} from '~~/server/models/User'
 
 export default defineEventHandler(async (event) => {
-  const { user } = await getUserSession(event)
+  const {user} = await getUserSession(event)
   if (!user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
   }
 
   const body = await readBody<{ teamId: string }>(event)
   if (!body.teamId) {
-    throw createError({ statusCode: 400, statusMessage: 'Missing teamId' })
+    throw createError({statusCode: 400, statusMessage: 'Missing teamId'})
   }
 
   await connectToDB()
@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!team) {
-    throw createError({ statusCode: 403, statusMessage: 'You are not a member of this team' })
+    throw createError({statusCode: 403, statusMessage: 'You are not a member of this team'})
   }
 
   // Update user currentTeamId
@@ -41,5 +41,5 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  return { success: true, teamId: body.teamId }
+  return {success: true, teamId: body.teamId}
 })

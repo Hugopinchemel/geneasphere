@@ -1,17 +1,17 @@
-import { defineEventHandler, createError, readBody } from 'h3'
-import { connectToDB } from '~~/server/utils/db'
-import { TeamModel } from '~~/server/models/Team'
-import { UserModel } from '~~/server/models/User'
+import {createError, defineEventHandler, readBody} from 'h3'
+import {connectToDB} from '~~/server/utils/db'
+import {TeamModel} from '~~/server/models/Team'
+import {UserModel} from '~~/server/models/User'
 
 export default defineEventHandler(async (event) => {
-  const { user } = await getUserSession(event)
+  const {user} = await getUserSession(event)
   if (!user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
   }
 
   const body = await readBody<{ name: string }>(event)
   if (!body.name) {
-    throw createError({ statusCode: 400, statusMessage: 'Missing team name' })
+    throw createError({statusCode: 400, statusMessage: 'Missing team name'})
   }
 
   await connectToDB()

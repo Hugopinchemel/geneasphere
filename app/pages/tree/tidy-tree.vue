@@ -1,17 +1,17 @@
 <script lang="ts" setup>
-import type { MatrimonialNode, Person } from '~/types'
+import type {MatrimonialNode, Person} from '~/types'
 
-definePageMeta({ title: 'Arbre Tidy' })
+definePageMeta({title: 'Arbre Tidy'})
 
 const headers = useRequestHeaders(['cookie'])
 const toast = useToast()
 
-const { data: allPersons, status: personsStatus } = useFetch<Person[]>('/api/persons', {
+const {data: allPersons, status: personsStatus} = useFetch<Person[]>('/api/persons', {
   headers: headers as Record<string, string>,
   default: () => [] as Person[]
 })
 
-const { data: allRelations, status: relationsStatus } = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
+const {data: allRelations, status: relationsStatus} = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
   headers: headers as Record<string, string>,
   default: () => [] as MatrimonialNode[]
 })
@@ -46,7 +46,7 @@ function addPerson(person: Person) {
   if (!treePersonIds.value.includes(id)) {
     const connected = findConnectedIds([id], allRelations.value ?? [])
     treePersonIds.value = Array.from(new Set([...treePersonIds.value, ...connected]))
-    toast.add({ title: `${person.firstName} ${person.lastName} et sa famille ajoutés`, color: 'success' })
+    toast.add({title: `${person.firstName} ${person.lastName} et sa famille ajoutés`, color: 'success'})
   }
   searchQuery.value = ''
   showResults.value = false
@@ -58,7 +58,7 @@ function removePerson(id: string) {
 
 function clearTree() {
   treePersonIds.value = []
-  toast.add({ title: 'Arbre réinitialisé', color: 'neutral' })
+  toast.add({title: 'Arbre réinitialisé', color: 'neutral'})
 }
 
 function formatDate(date?: string | null) {
@@ -78,7 +78,7 @@ function sexColor(sex: string) {
   return 'text-dimmed'
 }
 
-const { buildTree, findConnectedIds, getId } = useTreeBuilder()
+const {buildTree, findConnectedIds, getId} = useTreeBuilder()
 
 const treeGroups = computed(() =>
   buildTree(treePersons.value, allRelations.value ?? [])
@@ -103,7 +103,7 @@ const isLoading = computed(() =>
     <template #header>
       <UDashboardNavbar :ui="{ right: 'gap-3' }" title="Arbre généalogique">
         <template #leading>
-          <UDashboardSidebarCollapse />
+          <UDashboardSidebarCollapse/>
         </template>
         <template #right>
           <UButton
@@ -123,7 +123,7 @@ const isLoading = computed(() =>
       <div class="flex flex-col gap-6 p-6 max-w-5xl mx-auto w-full">
         <!-- Chargement -->
         <div v-if="isLoading" class="flex flex-col items-center gap-3 py-16">
-          <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
+          <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2"/>
           <p class="text-sm text-dimmed">
             Chargement…
           </p>
@@ -134,7 +134,7 @@ const isLoading = computed(() =>
           <UCard variant="subtle">
             <template #header>
               <div class="flex items-center gap-2">
-                <UIcon class="text-primary" name="i-lucide-user-plus" />
+                <UIcon class="text-primary" name="i-lucide-user-plus"/>
                 <span class="font-semibold">Importer une personne</span>
               </div>
             </template>
@@ -167,8 +167,8 @@ const isLoading = computed(() =>
                     <span class="font-medium text-sm truncate">{{ person.firstName }} {{ person.lastName }}</span>
                     <span class="text-xs text-dimmed">{{ formatDate(person.birthDate) }}</span>
                   </span>
-                  <UIcon :class="sexColor(person.sex)" :name="sexIcon(person.sex)" class="shrink-0" />
-                  <UIcon class="text-primary" name="i-lucide-plus" />
+                  <UIcon :class="sexColor(person.sex)" :name="sexIcon(person.sex)" class="shrink-0"/>
+                  <UIcon class="text-primary" name="i-lucide-plus"/>
                 </button>
               </div>
 
@@ -194,7 +194,7 @@ const isLoading = computed(() =>
           <UCard v-if="treePersons.length > 0" variant="subtle">
             <template #header>
               <div class="flex items-center gap-2">
-                <UIcon class="text-primary" name="i-lucide-users" />
+                <UIcon class="text-primary" name="i-lucide-users"/>
                 <span class="font-semibold">Membres de l'arbre</span>
                 <UBadge
                   :label="`${treePersons.length}`"
@@ -218,10 +218,12 @@ const isLoading = computed(() =>
                 <div class="flex flex-col min-w-0 flex-1">
                   <span class="font-semibold text-sm truncate">{{ person.firstName }} {{ person.lastName }}</span>
                   <span class="text-xs text-dimmed">
-                    {{ formatDate(person.birthDate) }}<template v-if="person.birthPlace"> · {{ person.birthPlace }}</template>
+                    {{ formatDate(person.birthDate) }}<template v-if="person.birthPlace"> · {{
+                      person.birthPlace
+                    }}</template>
                   </span>
                 </div>
-                <UIcon :class="sexColor(person.sex)" :name="sexIcon(person.sex)" class="shrink-0" />
+                <UIcon :class="sexColor(person.sex)" :name="sexIcon(person.sex)" class="shrink-0"/>
                 <div class="flex gap-1">
                   <UButton
                     color="primary"
@@ -254,7 +256,7 @@ const isLoading = computed(() =>
           <UCard v-if="treePersons.length > 0" variant="subtle">
             <template #header>
               <div class="flex items-center gap-2">
-                <UIcon class="text-primary" name="i-lucide-git-fork" />
+                <UIcon class="text-primary" name="i-lucide-git-fork"/>
                 <span class="font-semibold">Arbre</span>
                 <UBadge
                   v-if="treeGroups.length"
@@ -278,7 +280,7 @@ const isLoading = computed(() =>
             </div>
 
             <div v-else class="flex flex-col items-center gap-3 py-10 text-center">
-              <UIcon class="size-8 text-dimmed" name="i-lucide-info" />
+              <UIcon class="size-8 text-dimmed" name="i-lucide-info"/>
               <p class="text-sm text-dimmed">
                 Aucun groupe trouvé. Vérifiez les
                 <NuxtLink class="text-primary underline underline-offset-2" to="/matrimonial-nodes">
@@ -292,7 +294,7 @@ const isLoading = computed(() =>
           <!-- État vide -->
           <div v-if="treePersons.length === 0" class="flex flex-col items-center justify-center gap-4 py-20">
             <div class="p-4 rounded-full bg-primary/10">
-              <UIcon class="size-10 text-primary" name="i-lucide-git-fork" />
+              <UIcon class="size-10 text-primary" name="i-lucide-git-fork"/>
             </div>
             <p class="font-semibold text-lg">
               L'arbre est vide

@@ -1,8 +1,8 @@
-import { createError, defineEventHandler, readValidatedBody } from 'h3'
-import { connectToDB } from '~~/server/utils/db'
-import { MatrimonialNodeModel } from '~~/server/models/MatrimonialNode'
-import { TeamModel } from '~~/server/models/Team'
-import { z } from 'zod'
+import {createError, defineEventHandler, readValidatedBody} from 'h3'
+import {connectToDB} from '~~/server/utils/db'
+import {MatrimonialNodeModel} from '~~/server/models/MatrimonialNode'
+import {TeamModel} from '~~/server/models/Team'
+import {z} from 'zod'
 
 const bodySchema = z.object({
   status: z.enum(['marié', 'divorcé', 'pacsé', 'union_libre', 'inconnu']).default('inconnu'),
@@ -16,9 +16,9 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const { user } = await getUserSession(event)
+  const {user} = await getUserSession(event)
   if (!user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
   }
 
   const body = await readValidatedBody(event, bodySchema.parse)
@@ -28,14 +28,14 @@ export default defineEventHandler(async (event) => {
   let teamId = user.currentTeamId
 
   if (!teamId) {
-    const team = await TeamModel.findOne({ members: user.id })
+    const team = await TeamModel.findOne({members: user.id})
     if (team) {
       teamId = team._id.toString()
     }
   }
 
   if (!teamId) {
-    throw createError({ statusCode: 400, statusMessage: 'No team selected' })
+    throw createError({statusCode: 400, statusMessage: 'No team selected'})
   }
 
   const node = await MatrimonialNodeModel.create({

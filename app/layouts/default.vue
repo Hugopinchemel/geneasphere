@@ -1,12 +1,20 @@
 <script lang="ts" setup>
 import type {NavigationMenuItem} from '@nuxt/ui'
+import type {Mail, Notification} from '~/types'
 
 const toast = useToast()
+const {isNotificationsSlideoverOpen} = useDashboard()
 
 const open = ref(false)
 
-const links = [[{
-  label: 'Home',
+const {data: mails} = useFetch<Mail[]>('/api/mails', {default: () => []})
+const {data: notifications} = useFetch<Notification[]>('/api/notifications', {default: () => []})
+
+const unreadMailsCount = computed(() => mails.value.filter(m => m.unread).length)
+const unreadNotificationsCount = computed(() => notifications.value.filter(n => n.unread).length)
+
+const links = computed(() => [[{
+  label: 'Accueil',
   icon: 'i-lucide-house',
   to: '/',
   onSelect: () => {
@@ -27,21 +35,21 @@ const links = [[{
     open.value = false
   }
 }, {
-  label: 'Inbox',
+  label: 'Liens',
   icon: 'i-lucide-inbox',
   to: '/inbox',
-  badge: '4',
+  badge: unreadMailsCount.value > 0 ? String(unreadMailsCount.value) : undefined,
   onSelect: () => {
     open.value = false
   }
 }, {
-  label: 'Settings',
+  label: 'Paramètres',
   to: '/settings',
   icon: 'i-lucide-settings',
   defaultOpen: true,
   type: 'trigger',
   children: [{
-    label: 'General',
+    label: 'Général',
     to: '/settings',
     exact: true,
     onSelect: () => {
@@ -54,15 +62,39 @@ const links = [[{
       open.value = false
     }
   }, {
-    label: 'Security',
+    label: 'Sécurité',
     to: '/settings/security',
     onSelect: () => {
       open.value = false
     }
   }]
-}]] satisfies NavigationMenuItem[][]
+}]] satisfies NavigationMenuItem[][])
 
-const groups = computed(() => [{}])
+const groups = computed(() => [{
+  id: 'navigation',
+  label: 'Navigation',
+  items: [{
+    label: 'Home',
+    icon: 'i-lucide-house',
+    to: '/'
+  }, {
+    label: 'Personnes',
+    icon: 'i-lucide-users',
+    to: '/persons'
+  }, {
+    label: 'Nœuds matrimoniaux',
+    icon: 'i-lucide-heart',
+    to: '/matrimonial-nodes'
+  }, {
+    label: 'Inbox',
+    icon: 'i-lucide-inbox',
+    to: '/inbox'
+  }, {
+    label: 'Paramètres',
+    icon: 'i-lucide-settings',
+    to: '/settings'
+  }]
+}])
 
 onMounted(async () => {
   const cookie = useCookie('cookie-consent')
@@ -118,6 +150,26 @@ onMounted(async () => {
       </template>
 
       <template #footer="{ collapsed }">
+        <div :class="collapsed ? 'flex-col gap-1' : 'gap-1'" class="flex items-center">
+          <UTooltip :shortcuts="['N']" text="Notifications">
+            <UChip
+              :show="unreadNotificationsCount > 0"
+              :text="unreadNotificationsCount > 0 ? String(unreadNotificationsCount) : undefined"
+              color="error"
+              inset
+              size="sm"
+            >
+              <UButton
+                :square="true"
+                color="neutral"
+                icon="i-lucide-bell"
+                variant="ghost"
+                @click="isNotificationsSlideoverOpen = true"
+              />
+            </UChip>
+          </UTooltip>
+        </div>
+
         <UserMenu :collapsed="collapsed"/>
       </template>
     </UDashboardSidebar>

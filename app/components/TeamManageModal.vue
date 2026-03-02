@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Team, TeamMember } from '~/types'
+import type {Team, TeamMember} from '~/types'
 
 const props = defineProps<{
   team: Team
@@ -17,9 +17,9 @@ async function inviteMember() {
   try {
     await $fetch(`/api/teams/${props.team._id}/members`, {
       method: 'POST',
-      body: { email: email.value }
+      body: {email: email.value}
     })
-    toast.add({ title: 'Membre ajouté avec succès', color: 'success' })
+    toast.add({title: 'Membre ajouté avec succès', color: 'success'})
     email.value = ''
     emit('refresh')
   } catch (err) {
@@ -47,15 +47,15 @@ async function inviteMember() {
       >
         <UInput
           v-model="email"
-          placeholder="Email de l'utilisateur"
           class="flex-1"
-          type="email"
+          placeholder="Email de l'utilisateur"
           required
+          type="email"
         />
         <UButton
-          type="submit"
-          label="Inviter"
           :loading="inviting"
+          label="Inviter"
+          type="submit"
         />
       </form>
     </div>
@@ -71,8 +71,8 @@ async function inviteMember() {
           class="flex items-center gap-3 p-2 border border-default rounded-md"
         >
           <UAvatar
-            :src="member.avatar"
             :alt="member.name"
+            :src="member.avatar"
             size="sm"
           />
           <div class="flex-1 min-w-0">
@@ -85,8 +85,8 @@ async function inviteMember() {
           </div>
           <UBadge
             v-if="member._id === team.owner"
-            variant="subtle"
             size="sm"
+            variant="subtle"
           >
             Propriétaire
           </UBadge>

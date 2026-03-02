@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
-import { breakpointsTailwind } from '@vueuse/core'
-import type { Mail } from '~/types'
+import {computed, ref, watch} from 'vue'
+import {breakpointsTailwind} from '@vueuse/core'
+import type {Mail} from '~/types'
 
 const tabItems = [{
   label: 'All',
@@ -12,7 +12,7 @@ const tabItems = [{
 }]
 const selectedTab = ref('all')
 
-const { data: mails } = useFetch<Mail[]>('/api/mails', { default: () => [] })
+const {data: mails} = useFetch<Mail[]>('/api/mails', {default: () => []})
 
 // Filter mails based on the selected tab
 const filteredMails = computed(() => {
@@ -57,10 +57,10 @@ const isMobile = breakpoints.smaller('lg')
   >
     <UDashboardNavbar title="Inbox">
       <template #leading>
-        <UDashboardSidebarCollapse />
+        <UDashboardSidebarCollapse/>
       </template>
       <template #trailing>
-        <UBadge :label="filteredMails.length" variant="subtle" />
+        <UBadge :label="filteredMails.length" variant="subtle"/>
       </template>
 
       <template #right>
@@ -72,18 +72,18 @@ const isMobile = breakpoints.smaller('lg')
         />
       </template>
     </UDashboardNavbar>
-    <InboxList v-model="selectedMail" :mails="filteredMails" />
+    <InboxList v-model="selectedMail" :mails="filteredMails"/>
   </UDashboardPanel>
 
-  <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" />
+  <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null"/>
   <div v-else class="hidden lg:flex flex-1 items-center justify-center">
-    <UIcon class="size-32 text-dimmed" name="i-lucide-inbox" />
+    <UIcon class="size-32 text-dimmed" name="i-lucide-inbox"/>
   </div>
 
   <ClientOnly>
     <USlideover v-if="isMobile" v-model:open="isMailPanelOpen">
       <template #content>
-        <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null" />
+        <InboxMail v-if="selectedMail" :mail="selectedMail" @close="selectedMail = null"/>
       </template>
     </USlideover>
   </ClientOnly>

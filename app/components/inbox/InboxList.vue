@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { format, isToday } from 'date-fns'
-import type { Mail } from '~/types'
+import {format, isToday} from 'date-fns'
+import type {Mail} from '~/types'
 
 const props = defineProps<{
   mails: Mail[]
@@ -16,7 +16,7 @@ watch(selectedMail, () => {
   }
   const ref = mailsRefs.value[selectedMail.value.id]
   if (ref) {
-    ref.scrollIntoView({ block: 'nearest' })
+    ref.scrollIntoView({block: 'nearest'})
   }
 })
 
@@ -63,12 +63,12 @@ defineShortcuts({
           <div class="flex items-center gap-3">
             {{ mail.from.name }}
 
-            <UChip v-if="mail.unread" />
+            <UChip v-if="mail.unread"/>
           </div>
 
           <span>{{
-            isToday(new Date(mail.date)) ? format(new Date(mail.date), 'HH:mm') : format(new Date(mail.date), 'dd MMM')
-          }}</span>
+              isToday(new Date(mail.date)) ? format(new Date(mail.date), 'HH:mm') : format(new Date(mail.date), 'dd MMM')
+            }}</span>
         </div>
         <p :class="[mail.unread && 'font-semibold']" class="truncate">
           {{ mail.subject }}

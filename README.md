@@ -4,15 +4,20 @@
 [![Nuxt](https://img.shields.io/badge/Nuxt-4.x-00DC82?logo=nuxt&labelColor=020420)](https://nuxt.com)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&labelColor=020420)](https://www.mongodb.com)
 
-**GeneaSphere** est une application web de généalogie permettant de créer, visualiser et gérer des arbres généalogiques interactifs. Elle repose sur [Nuxt 4](https://nuxt.com), [Nuxt UI](https://ui.nuxt.com) et [MongoDB](https://www.mongodb.com) via Mongoose.
+**GeneaSphere** est une application web de généalogie permettant de créer, visualiser et gérer des arbres généalogiques
+interactifs. Elle repose sur [Nuxt 4](https://nuxt.com), [Nuxt UI](https://ui.nuxt.com)
+et [MongoDB](https://www.mongodb.com) via Mongoose.
 
 ---
 
 ## Fonctionnalités
 
-- 👤 **Gestion des personnes** — Créez des profils avec prénom, nom, sexe, dates et lieux de naissance/décès, photo et notes.
-- 💑 **Nœuds matrimoniaux** — Reliez des personnes en couples (marié, divorcé, pacsé, union libre…) et associez-leur des enfants (biologiques, adoption, GPA).
-- 🌳 **Arbre généalogique interactif** — Visualisez les relations sous forme d'arbre hiérarchique, avec fusion automatique des couples.
+- 👤 **Gestion des personnes** — Créez des profils avec prénom, nom, sexe, dates et lieux de naissance/décès, photo et
+  notes.
+- 💑 **Nœuds matrimoniaux** — Reliez des personnes en couples (marié, divorcé, pacsé, union libre…) et associez-leur des
+  enfants (biologiques, adoption, GPA).
+- 🌳 **Arbre généalogique interactif** — Visualisez les relations sous forme d'arbre hiérarchique, avec fusion
+  automatique des couples.
 - 🔎 **Sélection dynamique** — Choisissez les personnes à afficher dans l'arbre via une modale dédiée.
 - 🔐 **Authentification** — Inscription, connexion, gestion du profil, mot de passe et suppression de compte.
 - 📨 **Messagerie interne** — Boîte de réception intégrée.
@@ -23,15 +28,15 @@
 
 ## Stack technique
 
-| Couche | Technologie |
-|---|---|
-| Framework | [Nuxt 4](https://nuxt.com) + Vue 3 |
-| UI | [Nuxt UI v4](https://ui.nuxt.com) + Tailwind CSS v4 |
-| Base de données | MongoDB via [Mongoose](https://mongoosejs.com) |
-| Auth | [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils) |
-| Visualisation | [@unovis/vue](https://unovis.dev) |
-| Utilitaires | VueUse, date-fns, Zod |
-| Package manager | [pnpm](https://pnpm.io) |
+| Couche          | Technologie                                                  |
+|-----------------|--------------------------------------------------------------|
+| Framework       | [Nuxt 4](https://nuxt.com) + Vue 3                           |
+| UI              | [Nuxt UI v4](https://ui.nuxt.com) + Tailwind CSS v4          |
+| Base de données | MongoDB via [Mongoose](https://mongoosejs.com)               |
+| Auth            | [nuxt-auth-utils](https://github.com/atinux/nuxt-auth-utils) |
+| Visualisation   | [@unovis/vue](https://unovis.dev)                            |
+| Utilitaires     | VueUse, date-fns, Zod                                        |
+| Package manager | [pnpm](https://pnpm.io)                                      |
 
 ---
 
@@ -116,13 +121,15 @@ Démarrez le serveur de production :
 pnpm start
 ```
 
-Consultez la [documentation de déploiement Nuxt](https://nuxt.com/docs/getting-started/deployment) pour plus d'informations.
+Consultez la [documentation de déploiement Nuxt](https://nuxt.com/docs/getting-started/deployment) pour plus
+d'informations.
 
 ---
 
 ## Intégration Renovate
 
-Installez l'[application GitHub Renovate](https://github.com/apps/renovate/installations/select_target) sur votre dépôt pour maintenir les dépendances à jour automatiquement.
+Installez l'[application GitHub Renovate](https://github.com/apps/renovate/installations/select_target) sur votre dépôt
+pour maintenir les dépendances à jour automatiquement.
 
 ---
 

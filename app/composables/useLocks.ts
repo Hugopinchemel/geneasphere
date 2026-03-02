@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, type ComputedRef } from 'vue'
+import {type ComputedRef, onMounted, onUnmounted, ref} from 'vue'
 
 export function useLocks(resourceId: ComputedRef<string | undefined>) {
   const isLockedByMe = ref(false)
@@ -10,7 +10,10 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
   async function acquireLock() {
     if (!resourceId.value || resourceId.value === 'create') return
     try {
-      const data = await $fetch<{ userName: string, expiresAt: string }>(`/api/locks/${resourceId.value}`, { method: 'POST' })
+      const data = await $fetch<{
+        userName: string,
+        expiresAt: string
+      }>(`/api/locks/${resourceId.value}`, {method: 'POST'})
       isLockedByMe.value = true
       isLockedByOther.value = false
       lockOwner.value = data.userName
@@ -29,7 +32,7 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
   async function releaseLock() {
     if (!resourceId.value || !isLockedByMe.value) return
     try {
-      await $fetch(`/api/locks/${resourceId.value}`, { method: 'DELETE' })
+      await $fetch(`/api/locks/${resourceId.value}`, {method: 'DELETE'})
       isLockedByMe.value = false
     } catch {
       // Ignored

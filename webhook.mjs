@@ -1,8 +1,8 @@
-import { createServer } from 'node:http'
-import { createHmac, timingSafeEqual } from 'node:crypto'
-import { exec } from 'node:child_process'
-import { fileURLToPath } from 'node:url'
-import { dirname, join } from 'node:path'
+import {createServer} from 'node:http'
+import {createHmac, timingSafeEqual} from 'node:crypto'
+import {exec} from 'node:child_process'
+import {fileURLToPath} from 'node:url'
+import {dirname, join} from 'node:path'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -21,25 +21,23 @@ function verifySignature(payload, signature) {
   const provided = signature.slice('sha256='.length)
   try {
     return timingSafeEqual(Buffer.from(expected, 'hex'), Buffer.from(provided, 'hex'))
-  }
-  catch {
+  } catch {
     return false
   }
 }
 
 function runDeploy(res) {
   console.log(`[${new Date().toISOString()}] Deploy triggered`)
-  exec(`bash ${DEPLOY_SCRIPT}`, { cwd: __dirname }, (err, stdout, stderr) => {
+  exec(`bash ${DEPLOY_SCRIPT}`, {cwd: __dirname}, (err, stdout, stderr) => {
     if (err) {
       console.error('Deploy failed:', stderr)
-    }
-    else {
+    } else {
       console.log('Deploy succeeded:', stdout)
     }
   })
   // Respond immediately — deploy runs in background
-  res.writeHead(202, { 'Content-Type': 'application/json' })
-  res.end(JSON.stringify({ status: 'deploy started' }))
+  res.writeHead(202, {'Content-Type': 'application/json'})
+  res.end(JSON.stringify({status: 'deploy started'}))
 }
 
 const server = createServer((req, res) => {
@@ -68,8 +66,8 @@ const server = createServer((req, res) => {
         res.writeHead(200)
         return res.end(`Skipped branch: ${branch}`)
       }
+    } catch { /* non-JSON body is fine, just deploy */
     }
-    catch { /* non-JSON body is fine, just deploy */ }
 
     runDeploy(res)
   })

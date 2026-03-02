@@ -1,11 +1,11 @@
-import { createError, defineEventHandler, readBody } from 'h3'
-import { connectToDB } from '~~/server/utils/db'
-import { UserModel } from '~~/server/models/User'
+import {createError, defineEventHandler, readBody} from 'h3'
+import {connectToDB} from '~~/server/utils/db'
+import {UserModel} from '~~/server/models/User'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   if (!session?.user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
   }
 
   const body = await readBody<{
@@ -23,9 +23,9 @@ export default defineEventHandler(async (event) => {
   if (body.primaryColor) update.primaryColor = body.primaryColor
   if (body.neutralColor) update.neutralColor = body.neutralColor
 
-  const user = await UserModel.findByIdAndUpdate(session.user.id, update, { returnDocument: 'after' }).select('-password').lean()
+  const user = await UserModel.findByIdAndUpdate(session.user.id, update, {returnDocument: 'after'}).select('-password').lean()
   if (!user) {
-    throw createError({ statusCode: 404, statusMessage: 'User not found' })
+    throw createError({statusCode: 404, statusMessage: 'User not found'})
   }
 
   const safeUser = {
@@ -37,7 +37,7 @@ export default defineEventHandler(async (event) => {
     primaryColor: user.primaryColor || 'green',
     neutralColor: user.neutralColor || 'zinc'
   }
-  await setUserSession(event, { user: safeUser })
+  await setUserSession(event, {user: safeUser})
 
   return safeUser
 })

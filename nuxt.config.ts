@@ -9,12 +9,21 @@ export default defineNuxtConfig({
     'nuxt-auth-utils'
   ],
 
-  devtools: { enabled: false },
+  runtimeConfig: {
+    oauth: {
+      google: {
+        clientId: process.env.NUXT_OAUTH_GOOGLE_CLIENT_ID,
+        clientSecret: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET
+      }
+    }
+  },
+
+  devtools: {enabled: false},
 
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/api/**': { cors: true }
+    '/api/**': {cors: true}
   },
 
   vite: {

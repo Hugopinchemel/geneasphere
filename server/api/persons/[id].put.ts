@@ -1,8 +1,8 @@
-import { createError, defineEventHandler, getRouterParam, readValidatedBody } from 'h3'
-import { connectToDB } from '~~/server/utils/db'
-import { PersonModel } from '~~/server/models/Person'
-import { TeamModel } from '~~/server/models/Team'
-import { z } from 'zod'
+import {createError, defineEventHandler, getRouterParam, readValidatedBody} from 'h3'
+import {connectToDB} from '~~/server/utils/db'
+import {PersonModel} from '~~/server/models/Person'
+import {TeamModel} from '~~/server/models/Team'
+import {z} from 'zod'
 
 const bodySchema = z.object({
   firstName: z.string().min(1, 'Le prénom est requis').optional(),
@@ -17,9 +17,9 @@ const bodySchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const { user } = await getUserSession(event)
+  const {user} = await getUserSession(event)
   if (!user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
   }
 
   const id = getRouterParam(event, 'id')
@@ -27,10 +27,10 @@ export default defineEventHandler(async (event) => {
 
   await connectToDB()
 
-  const myTeams = await TeamModel.find({ members: user.id }).select('_id')
+  const myTeams = await TeamModel.find({members: user.id}).select('_id')
   const myTeamIds = myTeams.map(t => t._id)
 
-  const updateData: Record<string, unknown> = { ...body }
+  const updateData: Record<string, unknown> = {...body}
   if (body.birthDate !== undefined) {
     updateData.birthDate = body.birthDate ? new Date(body.birthDate) : null
   }
@@ -42,16 +42,16 @@ export default defineEventHandler(async (event) => {
     {
       _id: id,
       $or: [
-        { teamId: { $in: myTeamIds } },
-        { createdBy: user.id }
+        {teamId: {$in: myTeamIds}},
+        {createdBy: user.id}
       ]
     },
     updateData,
-    { returnDocument: 'after' }
+    {returnDocument: 'after'}
   )
 
   if (!person) {
-    throw createError({ statusCode: 404, statusMessage: 'Personne introuvable' })
+    throw createError({statusCode: 404, statusMessage: 'Personne introuvable'})
   }
 
   return person

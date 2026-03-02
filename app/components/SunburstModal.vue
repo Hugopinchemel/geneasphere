@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { MatrimonialNode, Person } from '~/types'
+import type {MatrimonialNode, Person} from '~/types'
 
 const props = defineProps<{
   person: Person | null
@@ -7,9 +7,9 @@ const props = defineProps<{
   allRelations: MatrimonialNode[]
 }>()
 
-const open = defineModel<boolean>('open', { default: false })
+const open = defineModel<boolean>('open', {default: false})
 
-const { buildAncestors } = useAncestorBuilder()
+const {buildAncestors} = useAncestorBuilder()
 
 const selectedPerson = ref<Person | null>(null)
 const history = ref<Person[]>([])
@@ -19,7 +19,7 @@ watch(() => props.person, (newPerson) => {
     selectedPerson.value = newPerson
     history.value = [newPerson]
   }
-}, { immediate: true })
+}, {immediate: true})
 
 const ancestorData = computed(() => {
   if (!selectedPerson.value || !props.allPersons) return null
@@ -65,7 +65,7 @@ function goBack() {
           </p>
         </div>
 
-        <SunburstChart :data="ancestorData" @select="handleSelect" />
+        <SunburstChart :data="ancestorData" @select="handleSelect"/>
       </div>
     </template>
   </UModal>

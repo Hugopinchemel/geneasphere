@@ -1,22 +1,22 @@
 <script lang="ts" setup>
-import type { Person } from '~/types'
-import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
+import type {Person} from '~/types'
+import type {DropdownMenuItem, TableColumn} from '@nuxt/ui'
 
 const toast = useToast()
 const headers = useRequestHeaders(['cookie'])
 
-const { data: persons, status, refresh } = useFetch<Person[]>('/api/persons', {
+const {data: persons, status, refresh} = useFetch<Person[]>('/api/persons', {
   headers: headers as Record<string, string>,
   default: () => [] as Person[]
 })
 
 const columns: TableColumn<Person>[] = [
-  { accessorKey: 'firstName', header: 'Prénom' },
-  { accessorKey: 'lastName', header: 'Nom' },
-  { accessorKey: 'sex', header: 'Sexe' },
-  { accessorKey: 'birthDate', header: 'Date de naissance' },
-  { accessorKey: 'birthPlace', header: 'Lieu de naissance' },
-  { accessorKey: '_id', header: 'Actions' }
+  {accessorKey: 'firstName', header: 'Prénom'},
+  {accessorKey: 'lastName', header: 'Nom'},
+  {accessorKey: 'sex', header: 'Sexe'},
+  {accessorKey: 'birthDate', header: 'Date de naissance'},
+  {accessorKey: 'birthPlace', header: 'Lieu de naissance'},
+  {accessorKey: '_id', header: 'Actions'}
 ]
 
 function formatDate(date?: string | null) {
@@ -37,11 +37,11 @@ function sexLabel(sex: string) {
 
 async function deletePerson(id: string) {
   try {
-    await $fetch(`/api/persons/${id}`, { method: 'DELETE' })
-    toast.add({ title: 'Personne supprimée', color: 'success' })
+    await $fetch(`/api/persons/${id}`, {method: 'DELETE'})
+    toast.add({title: 'Personne supprimée', color: 'success'})
     await refresh()
   } catch {
-    toast.add({ title: 'Erreur lors de la suppression', color: 'error' })
+    toast.add({title: 'Erreur lors de la suppression', color: 'error'})
   }
 }
 
@@ -68,7 +68,7 @@ function getActions(person: Person): DropdownMenuItem[][] {
     <template #header>
       <UDashboardNavbar :ui="{ right: 'gap-3' }" title="Personnes">
         <template #leading>
-          <UDashboardSidebarCollapse />
+          <UDashboardSidebarCollapse/>
         </template>
 
         <template #right>
@@ -83,7 +83,7 @@ function getActions(person: Person): DropdownMenuItem[][] {
 
     <template #body>
       <div v-if="status === 'pending'" class="flex justify-center py-16">
-        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
+        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2"/>
       </div>
       <div v-else-if="persons?.length" class="flex flex-col gap-4 p-4">
         <UTable :columns="columns" :data="persons">
@@ -106,7 +106,7 @@ function getActions(person: Person): DropdownMenuItem[][] {
         </UTable>
       </div>
       <div v-else class="flex flex-col items-center justify-center gap-4 p-12">
-        <UIcon class="size-12 text-dimmed" name="i-lucide-users" />
+        <UIcon class="size-12 text-dimmed" name="i-lucide-users"/>
         <p class="text-muted text-lg">
           Aucune personne enregistrée
         </p>

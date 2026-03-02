@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import * as z from 'zod'
-import type { FormSubmitEvent } from '@nuxt/ui'
-import type { MatrimonialNode, Person } from '~/types'
+import type {FormSubmitEvent} from '@nuxt/ui'
+import type {MatrimonialNode, Person} from '~/types'
 
 const route = useRoute()
 const router = useRouter()
@@ -9,16 +9,16 @@ const toast = useToast()
 const id = route.params.id as string
 const headers = useRequestHeaders(['cookie'])
 
-const { data: node, status: nodeStatus, refresh } = useFetch<MatrimonialNode | null>(`/api/matrimonial-nodes/${id}`, {
+const {data: node, status: nodeStatus, refresh} = useFetch<MatrimonialNode | null>(`/api/matrimonial-nodes/${id}`, {
   headers: headers as Record<string, string>,
   default: () => null
 })
-const { data: persons } = useFetch<Person[]>('/api/persons', {
+const {data: persons} = useFetch<Person[]>('/api/persons', {
   headers: headers as Record<string, string>,
   default: () => [] as Person[]
 })
 
-const { isLockedByOther, lockOwner } = useLocks(computed(() => id))
+const {isLockedByOther, lockOwner} = useLocks(computed(() => id))
 
 function toDateInput(date?: string | null) {
   if (!date) return null
@@ -48,7 +48,7 @@ watch(node, (n) => {
     person: getPersonId(c.person as string | Person),
     linkType: c.linkType
   }))
-}, { immediate: true })
+}, {immediate: true})
 
 const personOptions = computed(() =>
   (persons.value || []).map(p => ({
@@ -58,18 +58,18 @@ const personOptions = computed(() =>
 )
 
 const statusOptions = [
-  { label: 'Marié(e)', value: 'marié' },
-  { label: 'Divorcé(e)', value: 'divorcé' },
-  { label: 'Pacsé(e)', value: 'pacsé' },
-  { label: 'Union', value: 'union' },
-  { label: 'Union libre', value: 'union_libre' },
-  { label: 'Inconnu', value: 'inconnu' }
+  {label: 'Marié(e)', value: 'marié'},
+  {label: 'Divorcé(e)', value: 'divorcé'},
+  {label: 'Pacsé(e)', value: 'pacsé'},
+  {label: 'Union', value: 'union'},
+  {label: 'Union libre', value: 'union_libre'},
+  {label: 'Inconnu', value: 'inconnu'}
 ]
 
 const linkTypeOptions = [
-  { label: 'Biologique', value: 'biologique' },
-  { label: 'Adoption', value: 'adoption' },
-  { label: 'GPA', value: 'gpa' }
+  {label: 'Biologique', value: 'biologique'},
+  {label: 'Adoption', value: 'adoption'},
+  {label: 'GPA', value: 'gpa'}
 ]
 
 const schema = z.object({
@@ -86,7 +86,7 @@ const schema = z.object({
 type Schema = z.infer<typeof schema>
 
 function addChild() {
-  state.children.push({ person: '', linkType: 'biologique' })
+  state.children.push({person: '', linkType: 'biologique'})
 }
 
 function removeChild(index: number) {
@@ -108,11 +108,11 @@ const loading = ref(false)
 async function onSubmit(event: FormSubmitEvent<Schema>) {
   loading.value = true
   try {
-    await $fetch(`/api/matrimonial-nodes/${id}`, { method: 'PUT', body: event.data })
-    toast.add({ title: 'Nœud matrimonial mis à jour', color: 'success' })
+    await $fetch(`/api/matrimonial-nodes/${id}`, {method: 'PUT', body: event.data})
+    toast.add({title: 'Nœud matrimonial mis à jour', color: 'success'})
     await refresh()
   } catch {
-    toast.add({ title: 'Erreur', description: 'Impossible de modifier le nœud', color: 'error' })
+    toast.add({title: 'Erreur', description: 'Impossible de modifier le nœud', color: 'error'})
   } finally {
     loading.value = false
   }
@@ -120,11 +120,11 @@ async function onSubmit(event: FormSubmitEvent<Schema>) {
 
 async function onDelete() {
   try {
-    await $fetch(`/api/matrimonial-nodes/${id}`, { method: 'DELETE' })
-    toast.add({ title: 'Nœud supprimé', color: 'success' })
+    await $fetch(`/api/matrimonial-nodes/${id}`, {method: 'DELETE'})
+    toast.add({title: 'Nœud supprimé', color: 'success'})
     router.push('/matrimonial-nodes')
   } catch {
-    toast.add({ title: 'Erreur lors de la suppression', color: 'error' })
+    toast.add({title: 'Erreur lors de la suppression', color: 'error'})
   }
 }
 </script>
@@ -155,13 +155,13 @@ async function onDelete() {
 
     <template #body>
       <div v-if="nodeStatus === 'pending'" class="flex justify-center py-16">
-        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
+        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2"/>
       </div>
       <div
         v-else-if="!node"
         class="flex flex-col items-center justify-center gap-4 py-16"
       >
-        <UIcon class="size-12 text-dimmed" name="i-lucide-heart-off" />
+        <UIcon class="size-12 text-dimmed" name="i-lucide-heart-off"/>
         <p class="text-dimmed">
           Nœud introuvable
         </p>
@@ -198,10 +198,10 @@ async function onDelete() {
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <UFormField label="Date de début" name="startDate">
-              <UInput v-model="state.startDate" class="w-full" type="date" />
+              <UInput v-model="state.startDate" class="w-full" type="date"/>
             </UFormField>
             <UFormField label="Date de fin" name="endDate">
-              <UInput v-model="state.endDate" class="w-full" type="date" />
+              <UInput v-model="state.endDate" class="w-full" type="date"/>
             </UFormField>
           </div>
 
@@ -268,7 +268,7 @@ async function onDelete() {
                 />
               </UFormField>
               <UFormField :name="`children[${index}].linkType`" class="w-40" label="Type de lien">
-                <USelect v-model="state.children[index]!.linkType" :items="linkTypeOptions" class="w-full" />
+                <USelect v-model="state.children[index]!.linkType" :items="linkTypeOptions" class="w-full"/>
               </UFormField>
               <UButton
                 color="error"

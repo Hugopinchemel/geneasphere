@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Team, User } from '~/types'
+import type {DropdownMenuItem} from '@nuxt/ui'
+import type {Team, User} from '~/types'
 
 defineProps<{
   collapsed?: boolean
 }>()
 
-const { user, fetch: fetchSession } = useUserSession()
+const {user, fetch: fetchSession} = useUserSession()
 
-const { data: teamsData, refresh: refreshTeams } = await useFetch<Team[]>('/api/teams')
+const {data: teamsData, refresh: refreshTeams} = await useFetch<Team[]>('/api/teams')
 
 const teams = computed(() => {
   return (teamsData.value || []).map(t => ({
@@ -31,7 +31,7 @@ async function switchTeam(teamId: string) {
   try {
     await $fetch('/api/teams/current', {
       method: 'PUT',
-      body: { teamId }
+      body: {teamId}
     })
     await fetchSession()
     // Reload page to refresh all data linked to the team
@@ -52,7 +52,7 @@ async function createTeam() {
   try {
     await $fetch('/api/teams', {
       method: 'POST',
-      body: { name: newTeamName.value }
+      body: {name: newTeamName.value}
     })
     newTeamName.value = ''
     showCreateModal.value = false
@@ -72,11 +72,15 @@ const items = computed<DropdownMenuItem[][]>(() => {
     [{
       label: 'Gérer l\'équipe',
       icon: 'i-lucide-users',
-      onSelect: () => { showManageModal.value = true }
+      onSelect: () => {
+        showManageModal.value = true
+      }
     }, {
       label: 'Créer une équipe',
       icon: 'i-lucide-circle-plus',
-      onSelect: () => { showCreateModal.value = true }
+      onSelect: () => {
+        showCreateModal.value = true
+      }
     }]
   ]
 })
@@ -113,11 +117,11 @@ const items = computed<DropdownMenuItem[][]>(() => {
         @submit.prevent="createTeam"
       >
         <UFormField label="Nom de l'équipe">
-          <UInput v-model="newTeamName" placeholder="Ex: Famille Martin" class="w-full" />
+          <UInput v-model="newTeamName" class="w-full" placeholder="Ex: Famille Martin"/>
         </UFormField>
         <div class="flex justify-end gap-2">
-          <UButton variant="ghost" label="Annuler" @click="showCreateModal = false" />
-          <UButton type="submit" label="Créer" :loading="creating" />
+          <UButton label="Annuler" variant="ghost" @click="showCreateModal = false"/>
+          <UButton :loading="creating" label="Créer" type="submit"/>
         </div>
       </form>
     </template>

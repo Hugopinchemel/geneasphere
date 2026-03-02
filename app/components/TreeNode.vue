@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { Person, TreeGroup } from '~/types'
+import type {Person, TreeGroup} from '~/types'
 
 const props = defineProps<{
   group: TreeGroup
@@ -9,7 +9,7 @@ const emit = defineEmits(['click-person'])
 
 function formatDate(date?: string | null) {
   if (!date) return null
-  return new Date(date).toLocaleDateString('fr-FR', { year: 'numeric' })
+  return new Date(date).toLocaleDateString('fr-FR', {year: 'numeric'})
 }
 
 function sexCardClass(person: Person) {
@@ -80,7 +80,8 @@ function childLinkClass(linkType: string) {
     <div class="flex items-center">
       <!-- Cas parents vides (Point 2) -->
       <template v-if="group.persons.length === 0">
-        <div class="flex flex-col items-center p-2 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+        <div
+          class="flex flex-col items-center p-2 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
           <UTooltip :text="group.coupleStatus || 'Union sans parents connus'">
             <UIcon
               :class="coupleIconColor"
@@ -132,7 +133,8 @@ function childLinkClass(linkType: string) {
       <!-- Connecteur couple -->
       <template v-if="isCouple">
         <div class="flex flex-col items-center px-2 gap-1">
-          <div :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']" />
+          <div
+            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"/>
           <UTooltip :text="group.coupleStatus ?? 'union'">
             <UIcon
               :class="coupleIconColor"
@@ -140,7 +142,8 @@ function childLinkClass(linkType: string) {
               class="size-5 shrink-0"
             />
           </UTooltip>
-          <div :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']" />
+          <div
+            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"/>
         </div>
 
         <!-- Deuxième personne -->
@@ -184,14 +187,15 @@ function childLinkClass(linkType: string) {
 
     <!-- ── Enfants ── -->
     <template v-if="group.children.length">
-      <div :class="[isDivorced ? 'border-l-2 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']" />
+      <div
+        :class="[isDivorced ? 'border-l-2 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']"/>
       <div class="flex gap-12">
         <div
           v-for="child in group.children"
           :key="child.node.key"
           class="flex flex-col items-center"
         >
-          <div :class="[childLinkClass(child.linkType), 'h-8']" />
+          <div :class="[childLinkClass(child.linkType), 'h-8']"/>
           <TreeNode
             :group="child.node"
             @click-person="emit('click-person', $event)"
