@@ -22,7 +22,7 @@ const providers = [
 ]
 const {fetch: fetchSession} = useUserSession()
 
-async function onSubmit(data: Record<string, string>) {
+async function onSubmit({data}: {data: Record<string, string>}) {
   loading.value = true
   try {
     await $fetch('/api/auth/register', {
