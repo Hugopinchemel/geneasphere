@@ -88,7 +88,8 @@ function getTextTransform(node: HierarchyRectangularNode<D3Node>) {
 
 <template>
   <div
-    class="w-full h-[500px] flex items-center justify-center relative overflow-hidden bg-white dark:bg-gray-900 rounded-lg shadow-inner">
+    class="w-full h-[500px] flex items-center justify-center relative overflow-hidden bg-white dark:bg-gray-900 rounded-lg shadow-inner"
+  >
     <svg
       v-if="root"
       :height="width"
@@ -136,7 +137,8 @@ function getTextTransform(node: HierarchyRectangularNode<D3Node>) {
     </svg>
 
     <div
-      class="absolute bottom-4 left-4 text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1.5 p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-md border border-gray-200 dark:border-gray-700">
+      class="absolute bottom-4 left-4 text-xs text-gray-500 dark:text-gray-400 flex flex-col gap-1.5 p-3 bg-white/80 dark:bg-gray-800/80 backdrop-blur rounded-md border border-gray-200 dark:border-gray-700"
+    >
       <div class="flex items-center gap-2 font-medium mb-1">
         Légende
       </div>

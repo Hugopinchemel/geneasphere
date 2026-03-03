@@ -15,7 +15,9 @@ const providers = [
     label: 'Continuer avec Google',
     icon: 'i-simple-icons-google',
     color: 'neutral' as const,
-    onClick: () => { navigateTo('/api/auth/google', {external: true}) }
+    onClick: () => {
+      navigateTo('/api/auth/google', {external: true})
+    }
   }
 ]
 const {fetch: fetchSession} = useUserSession()

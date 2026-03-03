@@ -11,7 +11,7 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
     if (!resourceId.value || resourceId.value === 'create') return
     try {
       const data = await $fetch<{
-        userName: string,
+        userName: string
         expiresAt: string
       }>(`/api/locks/${resourceId.value}`, {method: 'POST'})
       isLockedByMe.value = true

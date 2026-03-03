@@ -1,4 +1,4 @@
-import {type Types} from 'mongoose'
+import type {Types} from 'mongoose'
 import {createError, defineEventHandler, readBody} from 'h3'
 import {connectToDB} from '~~/server/utils/db'
 import {TeamModel} from '~~/server/models/Team'

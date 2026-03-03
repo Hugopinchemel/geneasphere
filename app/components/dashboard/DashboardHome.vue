@@ -210,21 +210,23 @@ const treeGroups = computed(() =>
               </div>
               <p class="text-dimmed text-sm max-w-xs">
                 Votre histoire commence ici.
-                <br/>
+                <br>
                 Selectionez des personnes pour construire votre arbre.
               </p>
             </div>
 
             <!-- Arbre -->
             <div v-else-if="treeGroups.length > 0" class="overflow-auto">
-              <div class="flex gap-12 justify-start min-w-max p-4 pb-6">
-                <TreeNode
-                  v-for="group in treeGroups"
-                  :key="group.key"
-                  :group="group"
-                  @click-person="openSunburst"
-                />
-              </div>
+              <ClientOnly>
+                <div class="flex gap-12 justify-start min-w-max p-4 pb-6">
+                  <TreeNode
+                    v-for="group in treeGroups"
+                    :key="group.key"
+                    :group="group"
+                    @click-person="openSunburst"
+                  />
+                </div>
+              </ClientOnly>
             </div>
 
             <!-- Aucun groupe trouvé -->

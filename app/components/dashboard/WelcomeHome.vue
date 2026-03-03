@@ -76,7 +76,7 @@
 
     <!-- Footer -->
     <footer class="py-6 text-center text-xs text-dimmed border-t border-default">
-      © {{ new Date().getFullYear() }} GeneaSphere — Votre mémoire familiale, numérisée.
+      © 2026 GeneaSphere — Votre mémoire familiale, numérisée.
     </footer>
   </div>
 </template>

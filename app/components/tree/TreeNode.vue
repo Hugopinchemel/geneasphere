@@ -81,7 +81,8 @@ function childLinkClass(linkType: string) {
       <!-- Cas parents vides (Point 2) -->
       <template v-if="group.persons.length === 0">
         <div
-          class="flex flex-col items-center p-2 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+          class="flex flex-col items-center p-2 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50"
+        >
           <UTooltip :text="group.coupleStatus || 'Union sans parents connus'">
             <UIcon
               :class="coupleIconColor"
@@ -134,7 +135,8 @@ function childLinkClass(linkType: string) {
       <template v-if="isCouple">
         <div class="flex flex-col items-center px-2 gap-1">
           <div
-            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"/>
+            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"
+          />
           <UTooltip :text="group.coupleStatus ?? 'union'">
             <UIcon
               :class="coupleIconColor"
@@ -143,7 +145,8 @@ function childLinkClass(linkType: string) {
             />
           </UTooltip>
           <div
-            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"/>
+            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"
+          />
         </div>
 
         <!-- Deuxième personne -->
@@ -188,7 +191,8 @@ function childLinkClass(linkType: string) {
     <!-- ── Enfants ── -->
     <template v-if="group.children.length">
       <div
-        :class="[isDivorced ? 'border-l-2 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']"/>
+        :class="[isDivorced ? 'border-l-2 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']"
+      />
       <div class="flex gap-12">
         <div
           v-for="child in group.children"

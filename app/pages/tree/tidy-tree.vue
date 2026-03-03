@@ -269,14 +269,16 @@ const isLoading = computed(() =>
             </template>
 
             <div v-if="treeGroups.length > 0" class="overflow-auto p-6">
-              <div class="flex gap-12 justify-start min-w-max pb-4">
-                <TreeNode
-                  v-for="group in treeGroups"
-                  :key="group.key"
-                  :group="group"
-                  @click-person="openSunburst"
-                />
-              </div>
+              <ClientOnly>
+                <div class="flex gap-12 justify-start min-w-max pb-4">
+                  <TreeNode
+                    v-for="group in treeGroups"
+                    :key="group.key"
+                    :group="group"
+                    @click-person="openSunburst"
+                  />
+                </div>
+              </ClientOnly>
             </div>
 
             <div v-else class="flex flex-col items-center gap-3 py-10 text-center">

@@ -52,18 +52,27 @@ app/
 │   ├── settings/              # Paramètres utilisateur
 │   └── login.vue / register.vue
 ├── components/
-│   ├── TreeNode.vue           # Composant de rendu d'un nœud d'arbre
-│   └── ...
+│   ├── dashboard/             # Composants du tableau de bord
+│   ├── tree/                  # Composants liés à l'arbre (TreeNode, Sunburst...)
+│   ├── teams/                 # Gestion des équipes
+│   ├── user/                  # Menu utilisateur
+│   ├── notifications/         # Système de notifications
+│   └── inbox/                 # Messagerie interne
 ├── composables/
 │   ├── useTreeBuilder.ts      # Construction de la forêt généalogique
 │   └── useDashboard.ts
-├── types/index.d.ts           # Types TypeScript (Person, MatrimonialNode, TreeGroup…)
+├── types/                     # Types TypeScript organisés par domaine
+│   ├── index.d.ts             # Point d'entrée des types
+│   ├── genealogy.d.ts         # Person, MatrimonialNode, TreeGroup...
+│   ├── auth.d.ts              # User, Team...
+│   └── ui.d.ts                # Mail, Notification, Stat...
 server/
 ├── api/
 │   ├── persons/               # API REST personnes
 │   ├── matrimonial-nodes/     # API REST nœuds matrimoniaux
 │   └── auth/                  # API d'authentification
 └── models/                    # Modèles Mongoose
+scripts/                       # Scripts utilitaires et webhooks
 ```
 
 ---

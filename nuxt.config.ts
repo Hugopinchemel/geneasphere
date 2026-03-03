@@ -20,6 +20,37 @@ export default defineNuxtConfig({
 
   devtools: {enabled: false},
 
+  components: [
+    {
+      path: '~/components',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/dashboard',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/tree',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/teams',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/user',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/notifications',
+      pathPrefix: false
+    },
+    {
+      path: '~/components/inbox',
+      pathPrefix: false
+    }
+  ],
+
   css: ['~/assets/css/main.css'],
 
   routeRules: {

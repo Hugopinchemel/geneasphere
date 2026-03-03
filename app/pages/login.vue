@@ -14,7 +14,9 @@ const providers = [
     label: 'Continuer avec Google',
     icon: 'i-simple-icons-google',
     color: 'neutral' as const,
-    onClick: () => { window.location.href = '/auth/google' }
+    onClick: () => {
+      window.location.href = '/auth/google'
+    }
   }
 ]
 const {fetch: fetchSession} = useUserSession()
