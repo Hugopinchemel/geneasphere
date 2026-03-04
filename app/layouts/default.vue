@@ -1,14 +1,14 @@
 <script lang="ts" setup>
-import type {NavigationMenuItem} from '@nuxt/ui'
-import type {Mail, Notification} from '~/types'
+import type { NavigationMenuItem } from '@nuxt/ui'
+import type { Mail, Notification } from '~/types'
 
 const toast = useToast()
-const {isNotificationsSlideoverOpen} = useDashboard()
+const { isNotificationsSlideoverOpen } = useDashboard()
 
 const open = ref(false)
 
-const {data: mails} = useFetch<Mail[]>('/api/mails', {default: () => []})
-const {data: notifications} = useFetch<Notification[]>('/api/notifications', {default: () => []})
+const { data: mails } = useFetch<Mail[]>('/api/mails', { default: () => [] })
+const { data: notifications } = useFetch<Notification[]>('/api/notifications', { default: () => [] })
 
 const unreadMailsCount = computed(() => mails.value.filter(m => m.unread).length)
 const unreadNotificationsCount = computed(() => notifications.value.filter(n => n.unread).length)
@@ -95,31 +95,6 @@ const groups = computed(() => [{
     to: '/settings'
   }]
 }])
-
-onMounted(async () => {
-  const cookie = useCookie('cookie-consent')
-  if (cookie.value === 'accepted') {
-    return
-  }
-
-  toast.add({
-    title: 'We use first-party cookies to enhance your experience on our website.',
-    duration: 0,
-    close: false,
-    actions: [{
-      label: 'Accept',
-      color: 'neutral',
-      variant: 'outline',
-      onClick: () => {
-        cookie.value = 'accepted'
-      }
-    }, {
-      label: 'Opt out',
-      color: 'neutral',
-      variant: 'ghost'
-    }]
-  })
-})
 </script>
 
 <template>
@@ -134,11 +109,11 @@ onMounted(async () => {
       resizable
     >
       <template #header="{ collapsed }">
-        <TeamsMenu :collapsed="collapsed"/>
+        <TeamsMenu :collapsed="collapsed" />
       </template>
 
       <template #default="{ collapsed }">
-        <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default"/>
+        <UDashboardSearchButton :collapsed="collapsed" class="bg-transparent ring-default" />
 
         <UNavigationMenu
           :collapsed="collapsed"
@@ -170,14 +145,14 @@ onMounted(async () => {
           </UTooltip>
         </div>
 
-        <UserMenu :collapsed="collapsed"/>
+        <UserMenu :collapsed="collapsed" />
       </template>
     </UDashboardSidebar>
 
-    <UDashboardSearch :groups="groups"/>
+    <UDashboardSearch :groups="groups" />
 
-    <slot/>
+    <slot />
 
-    <NotificationsSlideover/>
+    <NotificationsSlideover />
   </UDashboardGroup>
 </template>

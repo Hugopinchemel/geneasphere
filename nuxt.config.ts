@@ -18,7 +18,7 @@ export default defineNuxtConfig({
     }
   },
 
-  devtools: {enabled: false},
+  devtools: { enabled: false },
 
   components: [
     {
@@ -54,7 +54,7 @@ export default defineNuxtConfig({
   css: ['~/assets/css/main.css'],
 
   routeRules: {
-    '/api/**': {cors: true}
+    '/api/**': { cors: true }
   },
 
   vite: {

@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import {format} from 'date-fns'
-import type {Mail} from '~/types'
+import { format } from 'date-fns'
+import type { Mail } from '~/types'
 
 defineProps<{
   mail: Mail
@@ -68,7 +68,7 @@ function onSubmit() {
         </UTooltip>
 
         <UTooltip text="Reply">
-          <UButton color="neutral" icon="i-lucide-reply" variant="ghost"/>
+          <UButton color="neutral" icon="i-lucide-reply" variant="ghost" />
         </UTooltip>
 
         <UDropdownMenu :items="dropdownItems">
@@ -113,7 +113,7 @@ function onSubmit() {
     <div class="pb-4 px-4 sm:px-6 shrink-0">
       <UCard :ui="{ header: 'flex items-center gap-1.5 text-dimmed' }" class="mt-auto" variant="subtle">
         <template #header>
-          <UIcon class="size-5" name="i-lucide-reply"/>
+          <UIcon class="size-5" name="i-lucide-reply" />
 
           <span class="text-sm truncate">
             Reply to {{ mail.from.name }} ({{ mail.from.email }})

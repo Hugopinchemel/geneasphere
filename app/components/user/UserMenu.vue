@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type {DropdownMenuItem} from '@nuxt/ui'
+import type { DropdownMenuItem } from '@nuxt/ui'
 
 defineProps<{
   collapsed?: boolean
@@ -7,7 +7,7 @@ defineProps<{
 
 const colorMode = useColorMode()
 const appConfig = useAppConfig()
-const {user, loggedIn, clear, fetch: fetchSession} = useUserSession()
+const { user, loggedIn, clear, fetch: fetchSession } = useUserSession()
 
 const colors = ['red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose']
 const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
@@ -22,7 +22,7 @@ const userDisplay = computed(() => {
 
 async function savePreferences(prefs: { theme?: string, primaryColor?: string, neutralColor?: string }) {
   try {
-    await $fetch('/api/auth/preferences', {method: 'PUT', body: prefs})
+    await $fetch('/api/auth/preferences', { method: 'PUT', body: prefs })
     await fetchSession()
   } catch {
     // silently fail
@@ -46,7 +46,7 @@ onMounted(() => {
 const items = computed<DropdownMenuItem[][]>(() => ([[{
   type: 'label',
   label: userDisplay.value.name,
-  avatar: {src: userDisplay.value.avatar, alt: userDisplay.value.name}
+  avatar: { src: userDisplay.value.avatar, alt: userDisplay.value.name }
 }], [{
   label: 'Profile',
   icon: 'i-lucide-user',
@@ -71,7 +71,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       onSelect: (e) => {
         e.preventDefault()
         appConfig.ui.colors.primary = color
-        savePreferences({primaryColor: color})
+        savePreferences({ primaryColor: color })
       }
     }))
   }, {
@@ -91,7 +91,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       onSelect: (e) => {
         e.preventDefault()
         appConfig.ui.colors.neutral = color
-        savePreferences({neutralColor: color})
+        savePreferences({ neutralColor: color })
       }
     }))
   }]
@@ -106,7 +106,7 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
     onSelect(e: Event) {
       e.preventDefault()
       colorMode.preference = 'light'
-      savePreferences({theme: 'light'})
+      savePreferences({ theme: 'light' })
     }
   }, {
     label: 'Dark',
@@ -116,14 +116,14 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
     onSelect(e: Event) {
       e.preventDefault()
       colorMode.preference = 'dark'
-      savePreferences({theme: 'dark'})
+      savePreferences({ theme: 'dark' })
     }
   }]
 }], [{
   label: 'Log out',
   icon: 'i-lucide-log-out',
   onSelect: async () => {
-    await $fetch('/api/auth/logout', {method: 'POST'})
+    await $fetch('/api/auth/logout', { method: 'POST' })
     await clear()
     await navigateTo('/login')
   }
@@ -147,9 +147,9 @@ const items = computed<DropdownMenuItem[][]>(() => ([[{
       color="neutral"
       variant="ghost"
     >
-      <UAvatar :alt="userDisplay.name" :src="userDisplay.avatar" size="2xs"/>
+      <UAvatar :alt="userDisplay.name" :src="userDisplay.avatar" size="2xs" />
       <span v-if="!collapsed" class="truncate text-left flex-1">{{ userDisplay.name }}</span>
-      <UIcon v-if="!collapsed" class="text-dimmed shrink-0" name="i-lucide-chevrons-up-down"/>
+      <UIcon v-if="!collapsed" class="text-dimmed shrink-0" name="i-lucide-chevrons-up-down" />
     </UButton>
 
     <template #chip-leading="{ item }">

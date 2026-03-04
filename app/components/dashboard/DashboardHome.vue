@@ -1,8 +1,8 @@
 <script lang="ts" setup>
-import type {DropdownMenuItem} from '@nuxt/ui'
-import type {MatrimonialNode, Person} from '~/types'
+import type { DropdownMenuItem } from '@nuxt/ui'
+import type { MatrimonialNode, Person } from '~/types'
 
-const {isNotificationsSlideoverOpen} = useDashboard()
+const { isNotificationsSlideoverOpen } = useDashboard()
 
 const items = [[{
   label: 'Ajouter une personne',
@@ -16,12 +16,12 @@ const items = [[{
 
 const headers = useRequestHeaders(['cookie'])
 
-const {data: allPersons, status: personsStatus} = useFetch<Person[]>('/api/persons', {
+const { data: allPersons, status: personsStatus } = useFetch<Person[]>('/api/persons', {
   headers: headers as Record<string, string>,
   default: () => [] as Person[]
 })
 
-const {data: allRelations, status: relationsStatus} = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
+const { data: allRelations, status: relationsStatus } = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
   headers: headers as Record<string, string>,
   default: () => [] as MatrimonialNode[]
 })
@@ -34,7 +34,7 @@ const isLoading = computed(() =>
 const isModalOpen = ref(false)
 const treePersonIds = useLocalStorage<string[]>('home-tree-persons', [])
 
-const {buildTree, findConnectedIds, getId} = useTreeBuilder()
+const { buildTree, findConnectedIds, getId } = useTreeBuilder()
 
 const treePersons = computed<Person[]>(() =>
   (allPersons.value ?? []).filter(p => treePersonIds.value.includes(getId(p)))
@@ -76,7 +76,7 @@ const treeGroups = computed(() =>
     <template #header>
       <UDashboardNavbar :ui="{ right: 'gap-3' }" title="Home">
         <template #leading>
-          <UDashboardSidebarCollapse/>
+          <UDashboardSidebarCollapse />
         </template>
         <template #right>
           <UTooltip :shortcuts="['N']" text="Notifications">
@@ -87,13 +87,13 @@ const treeGroups = computed(() =>
               @click="isNotificationsSlideoverOpen = true"
             >
               <UChip color="error" inset>
-                <UIcon class="size-5 shrink-0" name="i-lucide-bell"/>
+                <UIcon class="size-5 shrink-0" name="i-lucide-bell" />
               </UChip>
             </UButton>
           </UTooltip>
 
           <UDropdownMenu :items="items">
-            <UButton class="rounded-full" icon="i-lucide-plus" size="md"/>
+            <UButton class="rounded-full" icon="i-lucide-plus" size="md" />
           </UDropdownMenu>
         </template>
       </UDashboardNavbar>
@@ -105,7 +105,7 @@ const treeGroups = computed(() =>
         <UModal v-model:open="isModalOpen" title="Sélectionner les personnes de l'arbre">
           <template #body>
             <div v-if="isLoading" class="flex items-center justify-center py-10">
-              <UIcon class="size-6 text-primary animate-spin" name="i-lucide-loader-2"/>
+              <UIcon class="size-6 text-primary animate-spin" name="i-lucide-loader-2" />
             </div>
             <div v-else-if="!allPersons?.length" class="text-center py-8 text-dimmed text-sm">
               Aucune personne créée.
@@ -121,7 +121,7 @@ const treeGroups = computed(() =>
                 type="button"
                 @click="togglePerson(person)"
               >
-                <UCheckbox :model-value="isSelected(person)" tabindex="-1"/>
+                <UCheckbox :model-value="isSelected(person)" tabindex="-1" />
                 <UAvatar
                   :alt="`${person.firstName} ${person.lastName}`"
                   :src="person.photo || undefined"
@@ -130,8 +130,8 @@ const treeGroups = computed(() =>
                 <span class="flex-1 min-w-0">
                   <span class="font-medium text-sm truncate block">{{ person.firstName }} {{ person.lastName }}</span>
                   <span class="text-xs text-dimmed">{{
-                      person.birthDate ? new Date(person.birthDate).toLocaleDateString('fr-FR') : '—'
-                    }}</span>
+                    person.birthDate ? new Date(person.birthDate).toLocaleDateString('fr-FR') : '—'
+                  }}</span>
                 </span>
                 <UBadge
                   v-if="isSelected(person)"
@@ -146,7 +146,7 @@ const treeGroups = computed(() =>
           <template #footer>
             <div class="flex justify-between items-center w-full">
               <span class="text-sm text-dimmed">{{ treePersonIds.length }} personne(s) sélectionnée(s)</span>
-              <UButton label="Fermer" @click="isModalOpen = false"/>
+              <UButton label="Fermer" @click="isModalOpen = false" />
             </div>
           </template>
         </UModal>
@@ -164,7 +164,7 @@ const treeGroups = computed(() =>
           <div class="rounded-lg border border-default p-6 flex flex-col gap-3 sm:col-span-2">
             <div class="flex items-center justify-between gap-3 flex-wrap">
               <div class="flex items-center gap-3">
-                <UIcon class="size-8 text-primary" name="i-lucide-git-fork"/>
+                <UIcon class="size-8 text-primary" name="i-lucide-git-fork" />
                 <h3 class="text-lg font-semibold">
                   Arbre généalogique
                 </h3>
@@ -197,7 +197,7 @@ const treeGroups = computed(() =>
 
             <!-- Chargement -->
             <div v-if="isLoading" class="flex items-center justify-center py-12">
-              <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2"/>
+              <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
             </div>
 
             <!-- Arbre vide -->
@@ -206,7 +206,7 @@ const treeGroups = computed(() =>
               class="flex flex-col items-center justify-center gap-3 py-12 text-center"
             >
               <div class="p-3 rounded-full bg-primary/10">
-                <UIcon class="size-8 text-primary" name="i-lucide-git-fork"/>
+                <UIcon class="size-8 text-primary" name="i-lucide-git-fork" />
               </div>
               <p class="text-dimmed text-sm max-w-xs">
                 Votre histoire commence ici.
@@ -231,7 +231,7 @@ const treeGroups = computed(() =>
 
             <!-- Aucun groupe trouvé -->
             <div v-else class="flex flex-col items-center gap-3 py-8 text-center">
-              <UIcon class="size-6 text-dimmed" name="i-lucide-info"/>
+              <UIcon class="size-6 text-dimmed" name="i-lucide-info" />
               <p class="text-sm text-dimmed">
                 Aucun groupe trouvé. Vérifiez les
                 <NuxtLink class="text-primary underline underline-offset-2" to="/matrimonial-nodes">
@@ -244,7 +244,7 @@ const treeGroups = computed(() =>
 
           <div class="rounded-lg border border-default p-6 flex flex-col gap-3">
             <div class="flex items-center gap-3">
-              <UIcon class="size-8 text-primary" name="i-lucide-users"/>
+              <UIcon class="size-8 text-primary" name="i-lucide-users" />
               <h3 class="text-lg font-semibold">
                 Personnes
               </h3>
@@ -270,7 +270,7 @@ const treeGroups = computed(() =>
 
           <div class="rounded-lg border border-default p-6 flex flex-col gap-3">
             <div class="flex items-center gap-3">
-              <UIcon class="size-8 text-primary" name="i-lucide-heart"/>
+              <UIcon class="size-8 text-primary" name="i-lucide-heart" />
               <h3 class="text-lg font-semibold">
                 Nœuds matrimoniaux
               </h3>

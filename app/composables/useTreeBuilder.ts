@@ -1,4 +1,4 @@
-import type {MatrimonialNode, MatrimonialStatus, Person, TreeGroup} from '~/types'
+import type { ChildLinkType, MatrimonialNode, MatrimonialStatus, Person, TreeGroup } from '~/types'
 
 export function useTreeBuilder() {
   function getId(v: unknown): string {
@@ -22,7 +22,7 @@ export function useTreeBuilder() {
 
     // Nœuds matrimoniaux dont au moins un parent est dans la sélection
     const relevantRelations = relations.filter((rel) => {
-      return (rel.parents ?? []).some(p => personIds.has(getId(p)))
+      return (rel.parents ?? []).some(p => personIds.has(getId(p))) || (rel.children ?? []).some(c => personIds.has(getId(c.person)))
     })
 
     const groupChildren: Record<string, { id: string, type: ChildLinkType }[]> = {}
@@ -58,7 +58,7 @@ export function useTreeBuilder() {
       }
 
       const children = (rel.children ?? [])
-        .map(c => ({id: getId(c.person), type: c.linkType ?? 'biologique'}))
+        .map(c => ({ id: getId(c.person), type: c.linkType ?? 'biologique' }))
         .filter(c => c.id && personIds.has(c.id))
 
       if (!groupChildren[key]) groupChildren[key] = []
@@ -68,9 +68,13 @@ export function useTreeBuilder() {
     })
 
     // Personnes solo (pas dans un couple)
+    const personsAlreadyInGroup = new Set(
+      Object.values(groupPersons).flat().map(p => getId(p))
+    )
+
     persons.forEach((p) => {
       const id = getId(p)
-      if (!inCouple.has(id) && !groupPersons[id]) {
+      if (!inCouple.has(id) && !personsAlreadyInGroup.has(id)) {
         groupPersons[id] = [p]
       }
     })
@@ -144,7 +148,7 @@ export function useTreeBuilder() {
     return Array.from(connected)
   }
 
-  return {buildTree, findConnectedIds, getId}
+  return { buildTree, findConnectedIds, getId }
 }
 
 function findGroupKey(

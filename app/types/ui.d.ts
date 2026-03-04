@@ -1,5 +1,5 @@
-import type {AvatarProps} from '@nuxt/ui'
-import type {User} from './auth'
+import type { AvatarProps } from '@nuxt/ui'
+import type { User } from './auth'
 
 export interface Mail {
   id: number

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type {NavigationMenuItem} from '@nuxt/ui'
+import type { NavigationMenuItem } from '@nuxt/ui'
 
 const links = [[{
   label: 'General',
@@ -27,19 +27,19 @@ const links = [[{
     <template #header>
       <UDashboardNavbar title="Settings">
         <template #leading>
-          <UDashboardSidebarCollapse/>
+          <UDashboardSidebarCollapse />
         </template>
       </UDashboardNavbar>
 
       <UDashboardToolbar>
         <!-- NOTE: The `-mx-1` class is used to align with the `DashboardSidebarCollapse` button here. -->
-        <UNavigationMenu :items="links" class="-mx-1 flex-1" highlight/>
+        <UNavigationMenu :items="links" class="-mx-1 flex-1" highlight />
       </UDashboardToolbar>
     </template>
 
     <template #body>
       <div class="flex flex-col gap-4 sm:gap-6 lg:gap-12 w-full lg:max-w-2xl mx-auto">
-        <NuxtPage/>
+        <NuxtPage />
       </div>
     </template>
   </UDashboardPanel>

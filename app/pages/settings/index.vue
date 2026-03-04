@@ -1,19 +1,19 @@
 <script lang="ts" setup>
 import * as z from 'zod'
-import type {FormSubmitEvent} from '@nuxt/ui'
+import type { FormSubmitEvent } from '@nuxt/ui'
 
 const fileRef = ref<HTMLInputElement>()
 const toast = useToast()
-const {fetch: fetchSession} = useUserSession()
+const { fetch: fetchSession } = useUserSession()
 
-const profileSchema = z.object({
+const userProfileUpdateSchema = z.object({
   name: z.string().min(2, 'Too short'),
   email: z.string().email('Invalid email'),
   avatar: z.string().optional(),
   bio: z.string().optional()
 })
 
-type ProfileSchema = z.infer<typeof profileSchema>
+type ProfileSchema = z.infer<typeof userProfileUpdateSchema>
 
 const loading = ref(true)
 const saving = ref(false)
@@ -34,7 +34,7 @@ onMounted(async () => {
     profile.avatar = data.avatar || undefined
     profile.bio = data.bio || undefined
   } catch {
-    toast.add({title: 'Error', description: 'Failed to load profile', color: 'error'})
+    toast.add({ title: 'Error', description: 'Failed to load profile', color: 'error' })
   } finally {
     loading.value = false
   }
@@ -56,7 +56,7 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
     })
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
-    toast.add({title: 'Error', description: e?.data?.statusMessage || 'Failed to update profile', color: 'error'})
+    toast.add({ title: 'Error', description: e?.data?.statusMessage || 'Failed to update profile', color: 'error' })
   } finally {
     saving.value = false
   }
@@ -68,7 +68,7 @@ async function onFileChange(e: Event) {
 
   const file = input.files[0]!
   if (file.size > 5 * 1024 * 1024) {
-    toast.add({title: 'Erreur', description: 'Le fichier est trop volumineux (max 5 Mo)', color: 'error'})
+    toast.add({ title: 'Erreur', description: 'Le fichier est trop volumineux (max 5 Mo)', color: 'error' })
     return
   }
 
@@ -81,9 +81,9 @@ async function onFileChange(e: Event) {
       body: formData
     })
     profile.avatar = result.url
-    toast.add({title: 'Photo uploadée', color: 'success'})
+    toast.add({ title: 'Photo uploadée', color: 'success' })
   } catch {
-    toast.add({title: 'Erreur', description: 'Impossible d\'uploader la photo', color: 'error'})
+    toast.add({ title: 'Erreur', description: 'Impossible d\'uploader la photo', color: 'error' })
   } finally {
     uploading.value = false
   }
@@ -97,11 +97,11 @@ function onFileClick() {
 <template>
   <UForm
     id="settings"
-    :schema="profileSchema"
+    :schema="userProfileUpdateSchema"
     :state="profile"
     @submit="onSubmit"
   >
-    <UPageCard
+    <UDashboardCard
       class="mb-4"
       description="These informations will be displayed publicly."
       orientation="horizontal"
@@ -116,9 +116,9 @@ function onFileClick() {
         label="Save changes"
         type="submit"
       />
-    </UPageCard>
+    </UDashboardCard>
 
-    <UPageCard variant="subtle">
+    <UDashboardCard variant="subtle">
       <UFormField
         class="flex max-sm:flex-col justify-between items-start gap-4"
         description="Will appear on receipts, invoices, and other communication."
@@ -131,7 +131,7 @@ function onFileClick() {
           autocomplete="off"
         />
       </UFormField>
-      <USeparator/>
+      <USeparator />
       <UFormField
         class="flex max-sm:flex-col justify-between items-start gap-4"
         description="Used to sign in, for email receipts and product updates."
@@ -145,7 +145,7 @@ function onFileClick() {
           type="email"
         />
       </UFormField>
-      <USeparator/>
+      <USeparator />
       <UFormField
         class="flex max-sm:flex-col justify-between sm:items-center gap-4"
         description="JPG, GIF or PNG. 1MB Max."
@@ -173,7 +173,7 @@ function onFileClick() {
           >
         </div>
       </UFormField>
-      <USeparator/>
+      <USeparator />
       <UFormField
         :ui="{ container: 'w-full' }"
         class="flex max-sm:flex-col justify-between items-start gap-4"
@@ -188,6 +188,6 @@ function onFileClick() {
           class="w-full"
         />
       </UFormField>
-    </UPageCard>
+    </UDashboardCard>
   </UForm>
 </template>

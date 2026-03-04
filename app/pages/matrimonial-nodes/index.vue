@@ -1,27 +1,27 @@
 <script lang="ts" setup>
-import type {MatrimonialNode, Person} from '~/types'
-import type {DropdownMenuItem, TableColumn} from '@nuxt/ui'
+import type { MatrimonialNode, Person } from '~/types'
+import type { TableColumn } from '@nuxt/ui'
 
 const toast = useToast()
 const headers = useRequestHeaders(['cookie'])
 
-const {data: nodes, status, refresh} = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
+const { data: nodes, status, refresh } = useFetch<MatrimonialNode[]>('/api/matrimonial-nodes', {
   headers: headers as Record<string, string>,
   default: () => [] as MatrimonialNode[]
 })
 
 const statusLabels: Record<string, string> = {
-  marié: 'Marié(e)',
-  divorcé: 'Divorcé(e)',
-  pacsé: 'Pacsé(e)',
+  married: 'Marié(e)',
+  divorced: 'Divorcé(e)',
+  pacsed: 'Pacsé(e)',
   union_libre: 'Union libre',
   inconnu: 'Inconnu'
 }
 
 const statusColors: Record<string, string> = {
-  marié: 'success',
-  divorcé: 'error',
-  pacsé: 'info',
+  married: 'success',
+  divorced: 'error',
+  pacsed: 'info',
   union_libre: 'warning',
   inconnu: 'neutral'
 }
@@ -37,39 +37,22 @@ function formatDate(date?: string | null) {
 }
 
 const columns: TableColumn<MatrimonialNode>[] = [
-  {accessorKey: 'status', header: 'Statut'},
-  {accessorKey: 'parents', header: 'Parents'},
-  {accessorKey: 'children', header: 'Enfants'},
-  {accessorKey: 'startDate', header: 'Début'},
-  {accessorKey: 'endDate', header: 'Fin'},
-  {accessorKey: '_id', header: 'Actions'}
+  { accessorKey: 'status', header: 'Statut' },
+  { accessorKey: 'parents', header: 'Parents' },
+  { accessorKey: 'children', header: 'Enfants' },
+  { accessorKey: 'startDate', header: 'Début' },
+  { accessorKey: 'endDate', header: 'Fin' },
+  { accessorKey: '_id', header: 'Actions' }
 ]
 
 async function deleteNode(id: string) {
   try {
-    await $fetch(`/api/matrimonial-nodes/${id}`, {method: 'DELETE'})
-    toast.add({title: 'Nœud supprimé', color: 'success'})
+    await $fetch(`/api/matrimonial-nodes/${id}`, { method: 'DELETE' })
+    toast.add({ title: 'Nœud supprimé', color: 'success' })
     await refresh()
   } catch {
-    toast.add({title: 'Erreur lors de la suppression', color: 'error'})
+    toast.add({ title: 'Erreur lors de la suppression', color: 'error' })
   }
-}
-
-function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
-  return [[
-    {
-      label: 'Modifier',
-      icon: 'i-lucide-pencil',
-      to: `/matrimonial-nodes/${node._id}`
-    }
-  ], [
-    {
-      label: 'Supprimer',
-      icon: 'i-lucide-trash',
-      color: 'error' as const,
-      onSelect: () => deleteNode(node._id)
-    }
-  ]]
 }
 </script>
 
@@ -78,7 +61,7 @@ function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
     <template #header>
       <UDashboardNavbar :ui="{ right: 'gap-3' }" title="Nœuds matrimoniaux">
         <template #leading>
-          <UDashboardSidebarCollapse/>
+          <UDashboardSidebarCollapse />
         </template>
 
         <template #right>
@@ -92,8 +75,16 @@ function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
     </template>
 
     <template #body>
+      <UDashboardToolbar>
+        <template #left>
+          <div class="flex items-center gap-1.5">
+            <UBadge :label="nodes?.length" color="neutral" variant="subtle" />
+          </div>
+        </template>
+      </UDashboardToolbar>
+
       <div v-if="status === 'pending'" class="flex justify-center py-16">
-        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2"/>
+        <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
       </div>
       <div v-else-if="nodes?.length" class="flex flex-col gap-4 p-4">
         <UTable :columns="columns" :data="nodes">
@@ -133,19 +124,25 @@ function getActions(node: MatrimonialNode): DropdownMenuItem[][] {
             {{ formatDate(row.original.endDate) }}
           </template>
           <template #_id-cell="{ row }">
-            <UDropdownMenu :items="getActions(row.original)">
+            <div class="flex gap-2">
               <UButton
-                color="neutral"
-                icon="i-lucide-ellipsis-vertical"
-                size="sm"
-                variant="ghost"
+                icon="i-lucide-pencil"
+                color="primary"
+                label="Modifier"
+                :to="`/matrimonial-nodes/${row.original._id}`"
               />
-            </UDropdownMenu>
+              <UButton
+                color="error"
+                icon="i-lucide-trash"
+                label="Supprimer"
+                @click="deleteNode(row.original._id)"
+              />
+            </div>
           </template>
         </UTable>
       </div>
       <div v-else class="flex flex-col items-center justify-center gap-4 p-12">
-        <UIcon class="size-12 text-dimmed" name="i-lucide-heart"/>
+        <UIcon class="size-12 text-dimmed" name="i-lucide-heart" />
         <p class="text-muted text-lg">
           Aucun nœud matrimonial
         </p>

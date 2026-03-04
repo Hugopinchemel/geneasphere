@@ -1,4 +1,4 @@
-import {sub} from 'date-fns'
+import { sub } from 'date-fns'
 
 const mails = [{
   id: 1,
@@ -7,7 +7,7 @@ const mails = [{
     id: 101,
     name: 'Sophie Martin',
     email: 'sophie.martin@example.com',
-    avatar: {src: 'https://i.pravatar.cc/128?u=sophie'},
+    avatar: { src: 'https://i.pravatar.cc/128?u=sophie' },
     status: 'subscribed',
     location: 'Paris, France'
   },
@@ -20,7 +20,7 @@ N'hésitez pas à compléter ses informations si vous en avez davantage.
 
 Cordialement,
 Sophie`,
-  date: sub(new Date(), {minutes: 23}).toISOString()
+  date: sub(new Date(), { minutes: 23 }).toISOString()
 }, {
   id: 2,
   unread: true,
@@ -28,7 +28,7 @@ Sophie`,
     id: 102,
     name: 'Lucas Bernard',
     email: 'lucas.bernard@example.com',
-    avatar: {src: 'https://i.pravatar.cc/128?u=lucas'},
+    avatar: { src: 'https://i.pravatar.cc/128?u=lucas' },
     status: 'subscribed',
     location: 'Lyon, France'
   },
@@ -41,7 +41,7 @@ En acceptant, vous pourrez collaborer sur l'arbre généalogique de cette famill
 
 Cordialement,
 L'équipe Geneasphere`,
-  date: sub(new Date(), {hours: 1}).toISOString()
+  date: sub(new Date(), { hours: 1 }).toISOString()
 }, {
   id: 3,
   unread: true,
@@ -49,7 +49,7 @@ L'équipe Geneasphere`,
     id: 103,
     name: 'Emma Lefebvre',
     email: 'emma.lefebvre@example.com',
-    avatar: {src: 'https://i.pravatar.cc/128?u=emma'},
+    avatar: { src: 'https://i.pravatar.cc/128?u=emma' },
     status: 'subscribed',
     location: 'Bordeaux, France'
   },
@@ -62,7 +62,7 @@ Auriez-vous des informations sur sa descendance ? Je serais ravie de comparer no
 
 Bien cordialement,
 Emma`,
-  date: sub(new Date(), {hours: 3}).toISOString()
+  date: sub(new Date(), { hours: 3 }).toISOString()
 }, {
   id: 4,
   unread: false,
@@ -70,7 +70,7 @@ Emma`,
     id: 104,
     name: 'Contact Geneasphere',
     email: 'contact@geneasphere.com',
-    avatar: {src: undefined},
+    avatar: { src: undefined },
     status: 'subscribed',
     location: 'France'
   },
@@ -88,7 +88,7 @@ Pour commencer, nous vous recommandons de :
 N'hésitez pas à nous contacter si vous avez des questions.
 
 L'équipe Geneasphere`,
-  date: sub(new Date(), {days: 1}).toISOString()
+  date: sub(new Date(), { days: 1 }).toISOString()
 }, {
   id: 5,
   unread: false,
@@ -96,7 +96,7 @@ L'équipe Geneasphere`,
     id: 105,
     name: 'Thomas Petit',
     email: 'thomas.petit@example.com',
-    avatar: {src: 'https://i.pravatar.cc/128?u=thomas'},
+    avatar: { src: 'https://i.pravatar.cc/128?u=thomas' },
     status: 'subscribed',
     location: 'Marseille, France'
   },
@@ -109,7 +109,7 @@ Thomas Petit a effectué une modification dans l'arbre "Famille Petit" :
 Connectez-vous pour voir les dernières modifications.
 
 L'équipe Geneasphere`,
-  date: sub(new Date(), {days: 3}).toISOString()
+  date: sub(new Date(), { days: 3 }).toISOString()
 }, {
   id: 6,
   unread: false,
@@ -117,7 +117,7 @@ L'équipe Geneasphere`,
     id: 106,
     name: 'Isabelle Dubois',
     email: 'isabelle.dubois@example.com',
-    avatar: {src: 'https://i.pravatar.cc/128?u=isabelle'},
+    avatar: { src: 'https://i.pravatar.cc/128?u=isabelle' },
     status: 'subscribed',
     location: 'Nantes, France'
   },
@@ -134,7 +134,7 @@ Pouvez-vous me donner votre adresse email principale pour le partage ?
 
 Bien à vous,
 Isabelle`,
-  date: sub(new Date(), {days: 7}).toISOString()
+  date: sub(new Date(), { days: 7 }).toISOString()
 }]
 
 export default eventHandler(async () => {

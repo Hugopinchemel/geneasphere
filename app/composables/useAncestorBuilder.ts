@@ -1,4 +1,4 @@
-import type {MatrimonialNode, Person} from '~/types'
+import type { MatrimonialNode, Person } from '~/types'
 
 export interface AncestorGroup {
   person: Person
@@ -32,7 +32,7 @@ export function useAncestorBuilder() {
     }
 
     function buildRecursive(person: Person, depth = 0): AncestorGroup {
-      if (depth > 10) return {person, parents: []} // Limite de sécurité
+      if (depth > 10) return { person, parents: [] } // Limite de sécurité
 
       const rawParents = getParents(getId(person))
       const parents: AncestorGroup[] = []
@@ -68,5 +68,5 @@ export function useAncestorBuilder() {
     return buildRecursive(targetPerson)
   }
 
-  return {buildAncestors, getId}
+  return { buildAncestors, getId }
 }

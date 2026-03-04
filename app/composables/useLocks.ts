@@ -1,4 +1,4 @@
-import {type ComputedRef, onMounted, onUnmounted, ref} from 'vue'
+import { type ComputedRef, onMounted, onUnmounted, ref } from 'vue'
 
 export function useLocks(resourceId: ComputedRef<string | undefined>) {
   const isLockedByMe = ref(false)
@@ -13,18 +13,18 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
       const data = await $fetch<{
         userName: string
         expiresAt: string
-      }>(`/api/locks/${resourceId.value}`, {method: 'POST'})
+      }>(`/api/locks/${resourceId.value}`, { method: 'POST' })
       isLockedByMe.value = true
       isLockedByOther.value = false
       lockOwner.value = data.userName
       lockExpiresAt.value = new Date(data.expiresAt)
-    } catch (e: any) {
-      if (e.statusCode === 409) {
+    } catch (e: unknown) {
+      const err = e as { statusCode?: number, data?: { userName?: string, expiresAt?: string } }
+      if (err.statusCode === 409) {
         isLockedByOther.value = true
         isLockedByMe.value = false
-        const lockData = e.data as { userName: string, expiresAt: string } | undefined
-        lockOwner.value = lockData?.userName || 'Autre utilisateur'
-        lockExpiresAt.value = lockData?.expiresAt ? new Date(lockData.expiresAt) : null
+        lockOwner.value = err.data?.userName ?? 'Autre utilisateur'
+        lockExpiresAt.value = err.data?.expiresAt ? new Date(err.data.expiresAt) : null
       }
     }
   }
@@ -32,7 +32,7 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
   async function releaseLock() {
     if (!resourceId.value || !isLockedByMe.value) return
     try {
-      await $fetch(`/api/locks/${resourceId.value}`, {method: 'DELETE'})
+      await $fetch(`/api/locks/${resourceId.value}`, { method: 'DELETE' })
       isLockedByMe.value = false
     } catch {
       // Ignored
@@ -42,9 +42,9 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
   function startRenewal() {
     stopRenewal()
     // Renouveler toutes les 4 minutes
-    timer = setInterval(() => {
+    timer = setInterval(async () => {
       if (isLockedByMe.value) {
-        acquireLock()
+        await acquireLock()
       }
     }, 4 * 60 * 1000)
   }
@@ -53,15 +53,16 @@ export function useLocks(resourceId: ComputedRef<string | undefined>) {
     if (timer) clearInterval(timer)
   }
 
-  onMounted(() => {
+  onMounted(async () => {
     if (resourceId.value) {
-      acquireLock().then(() => startRenewal())
+      await acquireLock()
+      startRenewal()
     }
   })
 
-  onUnmounted(() => {
+  onUnmounted(async () => {
     stopRenewal()
-    releaseLock()
+    await releaseLock()
   })
 
   return {

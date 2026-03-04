@@ -1,5 +1,5 @@
 export type Sex = 'M' | 'F' | 'Autre'
-export type MatrimonialStatus = 'marié' | 'divorcé' | 'pacsé' | 'union' | 'union_libre' | 'inconnu'
+export type MatrimonialStatus = 'married' | 'divorced' | 'pacsed' | 'union' | 'union_libre' | 'inconnu'
 export type ChildLinkType = 'biologique' | 'adoption' | 'gpa'
 
 export interface Person {

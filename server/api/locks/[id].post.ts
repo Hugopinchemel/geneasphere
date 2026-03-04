@@ -1,15 +1,15 @@
-import {connectToDB} from '~~/server/utils/db'
-import {LockModel} from '~~/server/models/Lock'
+import { connectToDB } from '~~/server/utils/db'
+import { LockModel } from '~~/server/models/Lock'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   if (!session?.user) {
-    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const resourceId = getRouterParam(event, 'id')
   if (!resourceId) {
-    throw createError({statusCode: 400, statusMessage: 'Resource ID required'})
+    throw createError({ statusCode: 400, statusMessage: 'Resource ID required' })
   }
 
   await connectToDB()
@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
   const expiresAt = new Date(Date.now() + LOCK_DURATION)
 
   // Chercher si un verrou existe déjà
-  const existingLock = await LockModel.findOne({resourceId})
+  const existingLock = await LockModel.findOne({ resourceId })
 
   if (existingLock) {
     // Si c'est le nôtre, on le renouvelle
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
         })
       } else {
         // Expiré, on peut le prendre
-        await LockModel.deleteOne({_id: existingLock._id})
+        await LockModel.deleteOne({ _id: existingLock._id })
       }
     }
   }

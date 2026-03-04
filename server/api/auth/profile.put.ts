@@ -1,11 +1,11 @@
-import {createError, defineEventHandler, readBody} from 'h3'
-import {connectToDB} from '~~/server/utils/db'
-import {UserModel} from '~~/server/models/User'
+import { createError, defineEventHandler, readBody } from 'h3'
+import { connectToDB } from '~~/server/utils/db'
+import { UserModel } from '~~/server/models/User'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   if (!session?.user) {
-    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const body = await readBody<{ name?: string, email?: string, bio?: string, avatar?: string }>(event)
@@ -19,15 +19,15 @@ export default defineEventHandler(async (event) => {
   if (body.avatar !== undefined) update.avatar = body.avatar
 
   if (update.email && update.email !== session.user.email) {
-    const existing = await UserModel.findOne({email: update.email}).lean()
+    const existing = await UserModel.findOne({ email: update.email }).lean()
     if (existing) {
-      throw createError({statusCode: 409, statusMessage: 'Email already in use'})
+      throw createError({ statusCode: 409, statusMessage: 'Email already in use' })
     }
   }
 
-  const user = await UserModel.findByIdAndUpdate(session.user.id, update, {returnDocument: 'after'}).select('-password').lean()
+  const user = await UserModel.findByIdAndUpdate(session.user.id, update, { returnDocument: 'after' }).select('-password').lean()
   if (!user) {
-    throw createError({statusCode: 404, statusMessage: 'User not found'})
+    throw createError({ statusCode: 404, statusMessage: 'User not found' })
   }
 
   const safeUser = {
@@ -40,7 +40,7 @@ export default defineEventHandler(async (event) => {
     neutralColor: user.neutralColor || 'zinc',
     currentTeamId: user.currentTeamId || ''
   }
-  await setUserSession(event, {user: safeUser})
+  await setUserSession(event, { user: safeUser })
 
   return {
     ...safeUser,

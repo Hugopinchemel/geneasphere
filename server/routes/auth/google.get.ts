@@ -1,12 +1,12 @@
-import {connectToDB} from '~~/server/utils/db'
-import {UserModel} from '~~/server/models/User'
-import {TeamModel} from '~~/server/models/Team'
+import { connectToDB } from '~~/server/utils/db'
+import { UserModel } from '~~/server/models/User'
+import { TeamModel } from '~~/server/models/Team'
 
 export default defineOAuthGoogleEventHandler({
   config: {
     scope: ['email', 'profile']
   },
-  async onSuccess(event, {user: googleUser, tokens}) {
+  async onSuccess(event, { user: googleUser, tokens }) {
     console.log('[Google OAuth] ✅ onSuccess triggered')
     console.log('[Google OAuth] googleUser:', JSON.stringify(googleUser, null, 2))
     console.log('[Google OAuth] tokens:', JSON.stringify({
@@ -26,7 +26,7 @@ export default defineOAuthGoogleEventHandler({
         return sendRedirect(event, '/login?error=no_email')
       }
 
-      let user = await UserModel.findOne({email})
+      let user = await UserModel.findOne({ email })
       console.log('[Google OAuth] existing user found:', !!user)
 
       if (!user) {
@@ -63,7 +63,7 @@ export default defineOAuthGoogleEventHandler({
 
       if (!user.currentTeamId) {
         console.log('[Google OAuth] No currentTeamId, searching for a team...')
-        const team = await TeamModel.findOne({members: user._id})
+        const team = await TeamModel.findOne({ members: user._id })
         if (team) {
           user.currentTeamId = (team._id as { toString(): string }).toString()
           await user.save()
@@ -85,7 +85,7 @@ export default defineOAuthGoogleEventHandler({
       }
       console.log('[Google OAuth] safeUser:', JSON.stringify(safeUser, null, 2))
 
-      await setUserSession(event, {user: safeUser})
+      await setUserSession(event, { user: safeUser })
       console.log('[Google OAuth] ✅ Session set, redirecting to /')
       return sendRedirect(event, '/')
     } catch (err) {

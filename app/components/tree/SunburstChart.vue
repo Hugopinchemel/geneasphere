@@ -1,9 +1,9 @@
 <script lang="ts" setup>
-import type {HierarchyRectangularNode} from 'd3-hierarchy'
-import {hierarchy, partition} from 'd3-hierarchy'
-import {arc as d3Arc} from 'd3-shape'
-import type {AncestorGroup} from '~/composables/useAncestorBuilder'
-import type {Person} from '~/types'
+import type { HierarchyRectangularNode } from 'd3-hierarchy'
+import { hierarchy, partition } from 'd3-hierarchy'
+import { arc as d3Arc } from 'd3-shape'
+import type { AncestorGroup } from '~/composables/useAncestorBuilder'
+import type { Person } from '~/types'
 
 const props = defineProps<{
   data: AncestorGroup
@@ -33,14 +33,14 @@ function transformData(node: AncestorGroup, depth = 0): D3Node {
       children.push(transformData(father, depth + 1))
     } else if (depth < 4) {
       // Parent inconnu (Père)
-      children.push({person: {firstName: 'Inconnu', lastName: '', sex: 'M'} as Person, isDummy: true})
+      children.push({ person: { firstName: 'Inconnu', lastName: '', sex: 'M' } as Person, isDummy: true })
     }
 
     if (mother) {
       children.push(transformData(mother, depth + 1))
     } else if (depth < 4) {
       // Parent inconnu (Mère)
-      children.push({person: {firstName: 'Inconnu', lastName: '', sex: 'F'} as Person, isDummy: true})
+      children.push({ person: { firstName: 'Inconnu', lastName: '', sex: 'F' } as Person, isDummy: true })
     }
   }
 
@@ -143,11 +143,11 @@ function getTextTransform(node: HierarchyRectangularNode<D3Node>) {
         Légende
       </div>
       <div class="flex items-center gap-2">
-        <div class="size-3 rounded-full bg-blue-500 shadow-sm"/>
+        <div class="size-3 rounded-full bg-blue-500 shadow-sm" />
         <span>Homme</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="size-3 rounded-full bg-pink-500 shadow-sm"/>
+        <div class="size-3 rounded-full bg-pink-500 shadow-sm" />
         <span>Femme</span>
       </div>
     </div>

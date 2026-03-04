@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type {Person, TreeGroup} from '~/types'
+import type { Person, TreeGroup } from '~/types'
 
 const props = defineProps<{
   group: TreeGroup
@@ -9,7 +9,7 @@ const emit = defineEmits(['click-person'])
 
 function formatDate(date?: string | null) {
   if (!date) return null
-  return new Date(date).toLocaleDateString('fr-FR', {year: 'numeric'})
+  return new Date(date).toLocaleDateString('fr-FR', { year: 'numeric' })
 }
 
 function sexCardClass(person: Person) {
@@ -31,18 +31,18 @@ function sexLabel(person: Person) {
 }
 
 const statusIcon: Record<string, string> = {
-  marié: 'i-lucide-rings-wedding',
-  divorcé: 'i-lucide-heart-crack',
-  pacsé: 'i-lucide-handshake',
+  married: 'i-lucide-rings-wedding',
+  divorced: 'i-lucide-heart-crack',
+  pacsed: 'i-lucide-handshake',
   union: 'i-lucide-heart',
   union_libre: 'i-lucide-heart',
   inconnu: 'i-lucide-circle-help'
 }
 
 const statusColor: Record<string, string> = {
-  marié: 'text-primary',
-  divorcé: 'text-red-500',
-  pacsé: 'text-blue-500',
+  married: 'text-primary',
+  divorced: 'text-red-500',
+  pacsed: 'text-blue-500',
   union: 'text-pink-500',
   union_libre: 'text-pink-500',
   inconnu: 'text-gray-400'
@@ -57,7 +57,7 @@ const coupleIconColor = computed(() =>
 )
 
 const isCouple = computed(() => props.group.persons.length >= 2)
-const isDivorced = computed(() => props.group.coupleStatus === 'divorcé')
+const isDivorced = computed(() => props.group.coupleStatus === 'divorced')
 
 function childLinkClass(linkType: string) {
   const base = isDivorced.value ? 'border-dashed border-red-500' : ''
@@ -68,7 +68,7 @@ function childLinkClass(linkType: string) {
     return `${base} border-l-4 border-blue-600`
   }
   if (linkType === 'biologique') {
-    return `${base} border-l-2 border-green-500`
+    return `${base} border-l-4 border-green-500`
   }
   return `${base} w-1 bg-gray-400 dark:bg-gray-500`
 }
@@ -132,7 +132,7 @@ function childLinkClass(linkType: string) {
       </div>
 
       <!-- Connecteur couple -->
-      <template v-if="isCouple">
+      <template v-if="isCouple && group.persons[1]">
         <div class="flex flex-col items-center px-2 gap-1">
           <div
             :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"
@@ -151,7 +151,7 @@ function childLinkClass(linkType: string) {
 
         <!-- Deuxième personne -->
         <div
-          :class="sexCardClass(group.persons[1]!)"
+          :class="sexCardClass(group.persons[1])"
           class="rounded-xl shadow-sm w-32 flex flex-col items-center gap-2 p-3 cursor-pointer transition-all hover:shadow-md hover:scale-105"
           @click="emit('click-person', group.persons[1]!)"
         >
@@ -191,21 +191,31 @@ function childLinkClass(linkType: string) {
     <!-- ── Enfants ── -->
     <template v-if="group.children.length">
       <div
-        :class="[isDivorced ? 'border-l-2 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']"
+        :class="[isDivorced ? 'border-l-4 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']"
       />
-      <div class="flex gap-12">
-        <div
-          v-for="child in group.children"
-          :key="child.node.key"
-          class="flex flex-col items-center"
-        >
-          <div :class="[childLinkClass(child.linkType), 'h-8']"/>
-          <TreeNode
-            :group="child.node"
-            @click-person="emit('click-person', $event)"
+      <div class="flex justify-center">
+        <div class="relative inline-flex gap-12">
+          <!-- Barre horizontale centrée sur les enfants -->
+          <div
+            v-if="group.children.length > 1"
+            class="absolute top-0 left-16 right-16"
+            style="height: 4px; background: #6a7282;"
           />
+
+          <div
+            v-for="child in group.children"
+            :key="child.node.key"
+            class="flex flex-col items-center"
+          >
+            <div :class="[childLinkClass(child.linkType), 'h-8']" />
+            <TreeNode
+              :group="child.node"
+              @click-person="emit('click-person', $event)"
+            />
+          </div>
         </div>
       </div>
     </template>
   </div>
 </template>
+

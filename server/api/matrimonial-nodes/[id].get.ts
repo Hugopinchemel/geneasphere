@@ -1,32 +1,32 @@
-import {createError, defineEventHandler, getRouterParam} from 'h3'
-import {connectToDB} from '~~/server/utils/db'
-import {MatrimonialNodeModel} from '~~/server/models/MatrimonialNode'
-import {TeamModel} from '~~/server/models/Team'
+import { createError, defineEventHandler, getRouterParam } from 'h3'
+import { connectToDB } from '~~/server/utils/db'
+import { MatrimonialNodeModel } from '~~/server/models/MatrimonialNode'
+import { TeamModel } from '~~/server/models/Team'
 
 export default defineEventHandler(async (event) => {
-  const {user} = await getUserSession(event)
+  const { user } = await getUserSession(event)
   if (!user) {
-    throw createError({statusCode: 401, statusMessage: 'Unauthorized'})
+    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
   }
 
   const id = getRouterParam(event, 'id')
   await connectToDB()
 
-  const myTeams = await TeamModel.find({members: user.id}).select('_id')
+  const myTeams = await TeamModel.find({ members: user.id }).select('_id')
   const myTeamIds = myTeams.map(t => t._id)
 
   const node = await MatrimonialNodeModel.findOne({
     _id: id,
     $or: [
-      {teamId: {$in: myTeamIds}},
-      {createdBy: user.id}
+      { teamId: { $in: myTeamIds } },
+      { createdBy: user.id }
     ]
   })
     .populate('parents')
     .populate('children.person')
 
   if (!node) {
-    throw createError({statusCode: 404, statusMessage: 'Nœud matrimonial introuvable'})
+    throw createError({ statusCode: 404, statusMessage: 'Nœud matrimonial introuvable' })
   }
 
   return node

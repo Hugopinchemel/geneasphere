@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type {Team, TeamMember} from '~/types'
+import type { Team, TeamMember } from '~/types'
 
 const props = defineProps<{
   team: Team
@@ -17,9 +17,9 @@ async function inviteMember() {
   try {
     await $fetch(`/api/teams/${props.team._id}/members`, {
       method: 'POST',
-      body: {email: email.value}
+      body: { email: email.value }
     })
-    toast.add({title: 'Membre ajouté avec succès', color: 'success'})
+    toast.add({ title: 'Membre ajouté avec succès', color: 'success' })
     email.value = ''
     emit('refresh')
   } catch (err) {
