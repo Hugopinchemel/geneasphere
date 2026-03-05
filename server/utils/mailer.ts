@@ -16,9 +16,14 @@
  *   MAILER_FROM          (ex: '"GeneaSphere" <contact@example.com>')
  */
 
-// Le package n'a pas de types — on l'importe dynamiquement pour éviter
-// les erreurs TS au build sur les machines de dev qui ne l'ont pas.
-let _instance: MailerInstance | null = null
+// Le package est un module CJS — on utilise createRequire pour l'importer
+// depuis un contexte ESM (Nitro/Nuxt 4).
+// On ancre la résolution sur process.cwd() car Nitro remplace import.meta.url
+// par un chemin virtuel (globalThis._importMeta_.url = "/_entry.js") qui
+// empêche la résolution correcte des node_modules.
+import { createRequire } from 'module'
+
+const _require = createRequire(process.cwd() + '/package.json')
 
 interface MailerConfig {
   smtp: {
@@ -83,6 +88,11 @@ export interface DeleteResult {
   uid: number
 }
 
+/** Retourne la classe MailerAPI (CJS) — exportée pour l'instanciation per-user. */
+export function getMailerClass(): new (config: MailerConfig) => MailerInstance {
+  return _require('mailer') as new (config: MailerConfig) => MailerInstance
+}
+
 function buildConfig(): MailerConfig {
   const smtpUser = process.env.MAILER_SMTP_USER
   const smtpPass = process.env.MAILER_SMTP_PASS
@@ -109,13 +119,13 @@ function buildConfig(): MailerConfig {
   }
 }
 
+let _instance: MailerInstance | null = null
+
 export async function getMailer(): Promise<MailerInstance> {
   if (_instance) return _instance
 
-  // Import dynamique — le package n'existe que sur le VPS
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const MailerAPI = require('mailer')
-  _instance = new MailerAPI(buildConfig()) as MailerInstance
+  const MailerAPI = getMailerClass()
+  _instance = new MailerAPI(buildConfig())
   return _instance
 }
 
@@ -123,4 +133,3 @@ export async function getMailer(): Promise<MailerInstance> {
 export function resetMailer() {
   _instance = null
 }
-

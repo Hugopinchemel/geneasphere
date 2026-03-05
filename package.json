@@ -13,6 +13,7 @@
     "test:unit": "jest --config jest.config.cjs"
   },
   "dependencies": {
+    "mailer": "file:../mailer",
     "@iconify-json/lucide": "^1.2.90",
     "@iconify-json/simple-icons": "^1.2.70",
     "@internationalized/date": "^3.11.0",

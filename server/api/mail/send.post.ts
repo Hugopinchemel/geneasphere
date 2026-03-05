@@ -24,7 +24,5 @@ export default defineEventHandler(async (event) => {
     ...(data.cc ? { cc: data.cc } : {}),
     ...(data.bcc ? { bcc: data.bcc } : {})
   })
-
-  return result
 })
 

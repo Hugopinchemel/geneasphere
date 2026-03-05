@@ -1,6 +1,6 @@
 import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
-import type { MailerInstance } from '~~/server/utils/mailer'
+import { getMailerClass, type MailerInstance } from '~~/server/utils/mailer'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -23,8 +23,7 @@ export default defineEventHandler(async (event) => {
   const limit = Number(query.limit) || 30
 
   // Instancier le mailer avec les credentials de l'utilisateur
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const MailerAPI = require('mailer')
+  const MailerAPI = getMailerClass()
   const mailer: MailerInstance = new MailerAPI({
     imap: {
       host: process.env.MAILER_IMAP_HOST || 'localhost',

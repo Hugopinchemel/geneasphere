@@ -1,55 +1,42 @@
-const fs = require('fs')
-const path = require('path')
-
-// Parse .env file so PM2 passes the required env vars to the server process.
-// Nitro's production build does not auto-load .env, so we do it here.
-function loadDotEnv() {
-  const envPath = path.join(__dirname, '.env')
-  try {
-    const content = fs.readFileSync(envPath, 'utf-8')
-    const vars = {}
-    for (const line of content.split('\n')) {
-      const trimmed = line.trim()
-      if (!trimmed || trimmed.startsWith('#')) continue
-      const eqIdx = trimmed.indexOf('=')
-      if (eqIdx === -1) continue
-      const key = trimmed.slice(0, eqIdx).trim()
-      const val = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '')
-      vars[key] = val
-    }
-    return vars
-  } catch {
-    return {}
-  }
-}
-
-const dotEnv = loadDotEnv()
+// Sensitive credentials (MONGODB_URI, NUXT_SESSION_PASSWORD, NUXT_OAUTH_*, MAILER_IMAP_PASS)
+// are loaded from the .env file on the server — never commit real values here.
+require('dotenv').config({ path: __dirname + '/.env' })
 
 module.exports = {
   apps: [
     {
       name: 'geneasphere',
       script: '.output/server/index.mjs',
-      // cwd must be the project root so the server resolves paths correctly
-      cwd: __dirname,
       instances: 1,
       exec_mode: 'fork',
       env: {
         NODE_ENV: 'production',
-        PORT: 3000,
-        // Spread all .env vars so NUXT_SESSION_PASSWORD, MONGODB_URI, etc. are available
-        ...dotEnv
+        PORT: process.env.PORT || 3005,
+        HOST: process.env.HOST || '0.0.0.0',
+        MONGODB_URI: process.env.MONGODB_URI,
+        NUXT_SESSION_PASSWORD: process.env.NUXT_SESSION_PASSWORD,
+        NUXT_OAUTH_GOOGLE_CLIENT_ID: process.env.NUXT_OAUTH_GOOGLE_CLIENT_ID,
+        NUXT_OAUTH_GOOGLE_CLIENT_SECRET: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET,
+        MAILER_SMTP_HOST: process.env.MAILER_SMTP_HOST || 'localhost',
+        MAILER_SMTP_PORT: process.env.MAILER_SMTP_PORT || 25,
+        MAILER_SMTP_SECURE: process.env.MAILER_SMTP_SECURE || false,
+        MAILER_IMAP_HOST: process.env.MAILER_IMAP_HOST || 'localhost',
+        MAILER_IMAP_PORT: process.env.MAILER_IMAP_PORT || 143,
+        MAILER_IMAP_SECURE: process.env.MAILER_IMAP_SECURE || false,
+        MAILER_IMAP_USER: process.env.MAILER_IMAP_USER || 'contact',
+        MAILER_IMAP_PASS: process.env.MAILER_IMAP_PASS,
+        MAILER_FROM: process.env.MAILER_FROM,
+        NODE_PATH: __dirname + '/node_modules'
       }
     },
     {
       name: 'geneasphere-webhook',
       script: 'webhook.mjs',
-      cwd: __dirname,
       instances: 1,
       exec_mode: 'fork',
       env: {
         WEBHOOK_PORT: 9000,
-        WEBHOOK_SECRET: dotEnv.WEBHOOK_SECRET || '' // set in .env or system environment
+        WEBHOOK_SECRET: process.env.WEBHOOK_SECRET || ''
       }
     }
   ]

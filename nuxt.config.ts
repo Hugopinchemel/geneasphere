@@ -57,6 +57,12 @@ export default defineNuxtConfig({
     '/api/**': { cors: true }
   },
 
+  nitro: {
+    externals: {
+      external: ['mailer']
+    }
+  },
+
   vite: {
     optimizeDeps: {
       include: ['mongoose']
