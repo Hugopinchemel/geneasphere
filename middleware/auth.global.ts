@@ -8,6 +8,12 @@ export default defineNuxtRouteMiddleware((to) => {
     return
   }
 
+  // Onboarding accessible uniquement aux utilisateurs connectés
+  if (to.path === '/onboarding') {
+    if (!loggedIn.value) return navigateTo('/login')
+    return
+  }
+
   if (!loggedIn.value) {
     return navigateTo('/')
   }

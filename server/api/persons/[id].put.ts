@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, getRouterParam, readValidatedBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
+import { resolveTeamIds } from '~~/server/utils/team'
 import { PersonModel } from '~~/server/models/Person'
-import { TeamModel } from '~~/server/models/Team'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -18,41 +18,25 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { user } = await getUserSession(event)
-  if (!user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
+  if (!user) throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
 
   const id = getRouterParam(event, 'id')
   const body = await readValidatedBody(event, bodySchema.parse)
 
   await connectToDB()
 
-  const myTeams = await TeamModel.find({ members: user.id }).select('_id')
-  const myTeamIds = myTeams.map(t => t._id)
+  const teamIds = await resolveTeamIds(user.id)
 
   const updateData: Record<string, unknown> = { ...body }
-  if (body.birthDate !== undefined) {
-    updateData.birthDate = body.birthDate ? new Date(body.birthDate) : null
-  }
-  if (body.deathDate !== undefined) {
-    updateData.deathDate = body.deathDate ? new Date(body.deathDate) : null
-  }
+  if (body.birthDate !== undefined) updateData.birthDate = body.birthDate ? new Date(body.birthDate) : null
+  if (body.deathDate !== undefined) updateData.deathDate = body.deathDate ? new Date(body.deathDate) : null
 
   const person = await PersonModel.findOneAndUpdate(
-    {
-      _id: id,
-      $or: [
-        { teamId: { $in: myTeamIds } },
-        { createdBy: user.id }
-      ]
-    },
+    { _id: id, $or: [{ teamId: { $in: teamIds } }, { createdBy: user.id }] },
     updateData,
     { returnDocument: 'after' }
   )
-
-  if (!person) {
-    throw createError({ statusCode: 404, statusMessage: 'Personne introuvable' })
-  }
+  if (!person) throw createError({ statusCode: 404, statusMessage: 'Personne introuvable' })
 
   return person
 })

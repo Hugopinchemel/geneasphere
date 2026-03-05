@@ -28,8 +28,8 @@ const links = computed(() => [[{
     open.value = false
   }
 }, {
-  label: 'Nœuds matrimoniaux',
-  icon: 'i-lucide-heart',
+  label: 'Relations',
+  icon: 'lucide:link',
   to: '/matrimonial-nodes',
   onSelect: () => {
     open.value = false

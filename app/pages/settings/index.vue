@@ -18,6 +18,8 @@ type ProfileSchema = z.infer<typeof userProfileUpdateSchema>
 const loading = ref(true)
 const saving = ref(false)
 const uploading = ref(false)
+const inboxEnabled = ref(false)
+const savingInbox = ref(false)
 
 const profile = reactive<Partial<ProfileSchema>>({
   name: '',
@@ -33,6 +35,7 @@ onMounted(async () => {
     profile.email = data.email
     profile.avatar = data.avatar || undefined
     profile.bio = data.bio || undefined
+    inboxEnabled.value = (data as { inboxEnabled?: boolean }).inboxEnabled ?? false
   } catch {
     toast.add({ title: 'Error', description: 'Failed to load profile', color: 'error' })
   } finally {
@@ -59,6 +62,27 @@ async function onSubmit(event: FormSubmitEvent<ProfileSchema>) {
     toast.add({ title: 'Error', description: e?.data?.statusMessage || 'Failed to update profile', color: 'error' })
   } finally {
     saving.value = false
+  }
+}
+
+async function toggleInbox(value: boolean) {
+  savingInbox.value = true
+  try {
+    await $fetch('/api/auth/preferences', {
+      method: 'PUT',
+      body: { inboxEnabled: value }
+    })
+    inboxEnabled.value = value
+    await fetchSession()
+    toast.add({
+      title: value ? 'Boîte de réception activée' : 'Boîte de réception désactivée',
+      color: 'success'
+    })
+  } catch {
+    toast.add({ title: 'Erreur', description: 'Impossible de modifier la préférence', color: 'error' })
+    inboxEnabled.value = !value
+  } finally {
+    savingInbox.value = false
   }
 }
 
@@ -188,6 +212,24 @@ function onFileClick() {
           class="w-full"
         />
       </UFormField>
+      <USeparator />
+      <div class="flex max-sm:flex-col justify-between items-start gap-4">
+        <div>
+          <p class="font-medium text-sm text-highlighted">
+            Boîte de réception
+          </p>
+          <p class="text-sm text-dimmed mt-0.5">
+            Affiche les emails reçus sur votre adresse d'inscription dans l'onglet Inbox.
+            Nécessite un compte avec mot de passe (non compatible avec la connexion Google uniquement).
+          </p>
+        </div>
+        <USwitch
+          :loading="savingInbox"
+          :model-value="inboxEnabled"
+          class="shrink-0"
+          @update:model-value="toggleInbox"
+        />
+      </div>
     </UDashboardCard>
   </UForm>
 </template>

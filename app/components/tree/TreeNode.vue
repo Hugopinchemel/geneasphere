@@ -7,12 +7,12 @@ const props = defineProps<{
 
 const emit = defineEmits(['click-person'])
 
-function formatDate(date?: string | null) {
+function formatYear(date?: string | null) {
   if (!date) return null
   return new Date(date).toLocaleDateString('fr-FR', { year: 'numeric' })
 }
 
-function sexCardClass(person: Person) {
+function cardClass(person: Person) {
   if (person.sex === 'M') return 'ring-2 ring-blue-500 bg-blue-50/50 dark:bg-blue-900/20'
   if (person.sex === 'F') return 'ring-2 ring-pink-500 bg-pink-50/50 dark:bg-pink-900/20'
   return 'ring-1 ring-gray-300 dark:ring-gray-700 bg-default'
@@ -61,42 +61,31 @@ const isDivorced = computed(() => props.group.coupleStatus === 'divorced')
 
 function childLinkClass(linkType: string) {
   const base = isDivorced.value ? 'border-dashed border-red-500' : ''
-  if (linkType === 'adoption') {
-    return `${base} border-l-4 border-black dark:border-white`
-  }
-  if (linkType === 'gpa') {
-    return `${base} border-l-4 border-blue-600`
-  }
-  if (linkType === 'biologique') {
-    return `${base} border-l-4 border-green-500`
-  }
+  if (linkType === 'adoption') return `${base} border-l-4 border-black dark:border-white`
+  if (linkType === 'gpa') return `${base} border-l-4 border-blue-600`
+  if (linkType === 'biologique') return `${base} border-l-4 border-green-500`
   return `${base} w-1 bg-gray-400 dark:bg-gray-500`
 }
 </script>
 
 <template>
   <div class="flex flex-col items-center select-none">
-    <!-- ── Groupe (couple ou solo) ── -->
+    <!-- Groupe (couple ou personne seule) -->
     <div class="flex items-center">
-      <!-- Cas parents vides (Point 2) -->
+
+      <!-- Groupe sans parents connus -->
       <template v-if="group.persons.length === 0">
-        <div
-          class="flex flex-col items-center p-2 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50"
-        >
+        <div class="flex flex-col items-center p-2 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
           <UTooltip :text="group.coupleStatus || 'Union sans parents connus'">
-            <UIcon
-              :class="coupleIconColor"
-              :name="coupleIcon"
-              class="size-8"
-            />
+            <UIcon :class="coupleIconColor" :name="coupleIcon" class="size-8" />
           </UTooltip>
         </div>
       </template>
 
-      <!-- Première personne (ou seule) -->
+      <!-- Première personne -->
       <div
         v-if="group.persons[0]"
-        :class="sexCardClass(group.persons[0]!)"
+        :class="cardClass(group.persons[0]!)"
         class="rounded-xl shadow-sm w-32 flex flex-col items-center gap-2 p-3 cursor-pointer transition-all hover:shadow-md hover:scale-105"
         @click="emit('click-person', group.persons[0]!)"
       >
@@ -118,8 +107,8 @@ function childLinkClass(linkType: string) {
             v-if="group.persons[0]!.birthDate || group.persons[0]!.deathDate"
             class="text-xs text-gray-500 dark:text-gray-400 leading-none"
           >
-            <template v-if="group.persons[0]!.birthDate">{{ formatDate(group.persons[0]!.birthDate) }}</template>
-            <template v-if="group.persons[0]!.deathDate"> – {{ formatDate(group.persons[0]!.deathDate) }}</template>
+            <template v-if="group.persons[0]!.birthDate">{{ formatYear(group.persons[0]!.birthDate) }}</template>
+            <template v-if="group.persons[0]!.deathDate"> – {{ formatYear(group.persons[0]!.deathDate) }}</template>
           </span>
           <UBadge
             :color="sexBadgeColor(group.persons[0]!)"
@@ -131,27 +120,19 @@ function childLinkClass(linkType: string) {
         </div>
       </div>
 
-      <!-- Connecteur couple -->
+      <!-- Connecteur de couple -->
       <template v-if="isCouple && group.persons[1]">
         <div class="flex flex-col items-center px-2 gap-1">
-          <div
-            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"
-          />
+          <div :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']" />
           <UTooltip :text="group.coupleStatus ?? 'union'">
-            <UIcon
-              :class="coupleIconColor"
-              :name="coupleIcon"
-              class="size-5 shrink-0"
-            />
+            <UIcon :class="coupleIconColor" :name="coupleIcon" class="size-5 shrink-0" />
           </UTooltip>
-          <div
-            :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']"
-          />
+          <div :class="[isDivorced ? 'border-t-2 border-dashed border-red-500' : 'h-1 bg-gray-400 dark:bg-gray-500', 'w-6']" />
         </div>
 
         <!-- Deuxième personne -->
         <div
-          :class="sexCardClass(group.persons[1])"
+          :class="cardClass(group.persons[1])"
           class="rounded-xl shadow-sm w-32 flex flex-col items-center gap-2 p-3 cursor-pointer transition-all hover:shadow-md hover:scale-105"
           @click="emit('click-person', group.persons[1]!)"
         >
@@ -173,8 +154,8 @@ function childLinkClass(linkType: string) {
               v-if="group.persons[1]!.birthDate || group.persons[1]!.deathDate"
               class="text-xs text-gray-500 dark:text-gray-400 leading-none"
             >
-              <template v-if="group.persons[1]!.birthDate">{{ formatDate(group.persons[1]!.birthDate) }}</template>
-              <template v-if="group.persons[1]!.deathDate"> – {{ formatDate(group.persons[1]!.deathDate) }}</template>
+              <template v-if="group.persons[1]!.birthDate">{{ formatYear(group.persons[1]!.birthDate) }}</template>
+              <template v-if="group.persons[1]!.deathDate"> – {{ formatYear(group.persons[1]!.deathDate) }}</template>
             </span>
             <UBadge
               :color="sexBadgeColor(group.persons[1]!)"
@@ -188,20 +169,16 @@ function childLinkClass(linkType: string) {
       </template>
     </div>
 
-    <!-- ── Enfants ── -->
+    <!-- Enfants -->
     <template v-if="group.children.length">
-      <div
-        :class="[isDivorced ? 'border-l-4 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']"
-      />
+      <div :class="[isDivorced ? 'border-l-4 border-dashed border-red-500' : 'w-1 bg-gray-400 dark:bg-gray-500', 'h-8']" />
       <div class="flex justify-center">
         <div class="relative inline-flex gap-12">
-          <!-- Barre horizontale centrée sur les enfants -->
           <div
             v-if="group.children.length > 1"
             class="absolute top-0 left-16 right-16"
             style="height: 4px; background: #6a7282;"
           />
-
           <div
             v-for="child in group.children"
             :key="child.node.key"

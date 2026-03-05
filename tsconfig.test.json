@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "lib": ["ES2020"],
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"],
+      "~~/*": ["./*"]
+    },
+    "types": ["jest", "node"],
+    "skipLibCheck": true
+  },
+  "include": ["tests/**/*", "test-utils/**/*", "server/**/*", "middleware/**/*"]
+}

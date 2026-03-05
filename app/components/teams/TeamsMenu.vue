@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { DropdownMenuItem } from '@nuxt/ui'
-import type { Team, User } from '~/types'
+import type { Team } from '~/types'
 
 defineProps<{
   collapsed?: boolean
@@ -23,7 +23,7 @@ const teams = computed(() => {
 })
 
 const selectedTeam = computed(() => {
-  const currentId = (user.value as User & { currentTeamId: string })?.currentTeamId
+  const currentId = user.value?.currentTeamId
   return teams.value.find(t => t.id === currentId) || teams.value[0]
 })
 
@@ -128,13 +128,13 @@ const items = computed<DropdownMenuItem[][]>(() => {
   </UModal>
 
   <UModal
-    v-if="teamsData?.find(t => t._id === (user as User & { currentTeamId: string })?.currentTeamId)"
+    v-if="teamsData?.find(t => t._id === user?.currentTeamId)"
     v-model:open="showManageModal"
     title="Gérer l'équipe"
   >
     <template #body>
       <TeamManageModal
-        :team="teamsData.find(t => t._id === (user as User & { currentTeamId: string })?.currentTeamId)!"
+        :team="teamsData.find(t => t._id === user?.currentTeamId)!"
         @refresh="refreshTeams"
       />
     </template>

@@ -20,7 +20,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
   }
 
-  const match = await compare(password, user.password)
+  const match = await compare(password, user.password || '')
   if (!match) {
     throw createError({ statusCode: 401, statusMessage: 'Invalid credentials' })
   }

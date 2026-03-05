@@ -7,6 +7,8 @@ declare module '#auth-utils' {
     theme?: 'light' | 'dark'
     primaryColor?: string
     neutralColor?: string
+    currentTeamId?: string
+    inboxEnabled?: boolean
   }
 }
 

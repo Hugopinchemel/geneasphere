@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, readValidatedBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
+import { resolveTeamId } from '~~/server/utils/team'
 import { PersonModel } from '~~/server/models/Person'
-import { TeamModel } from '~~/server/models/Team'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -18,34 +18,20 @@ const bodySchema = z.object({
 
 export default defineEventHandler(async (event) => {
   const { user } = await getUserSession(event)
-  if (!user) {
-    throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
-  }
+  if (!user) throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
 
   const body = await readValidatedBody(event, bodySchema.parse)
 
   await connectToDB()
 
-  let teamId = user.currentTeamId
+  const teamId = await resolveTeamId(user)
+  if (!teamId) throw createError({ statusCode: 400, statusMessage: 'No team selected' })
 
-  if (!teamId) {
-    const team = await TeamModel.findOne({ members: user.id })
-    if (team) {
-      teamId = team._id.toString()
-    }
-  }
-
-  if (!teamId) {
-    throw createError({ statusCode: 400, statusMessage: 'No team selected' })
-  }
-
-  const person = await PersonModel.create({
+  return PersonModel.create({
     ...body,
     birthDate: body.birthDate ? new Date(body.birthDate) : undefined,
     deathDate: body.deathDate ? new Date(body.deathDate) : undefined,
     teamId,
     createdBy: user.id
   })
-
-  return person
 })

@@ -12,12 +12,12 @@ const open = defineModel<boolean>('open', { default: false })
 const { buildAncestors } = useAncestorBuilder()
 
 const selectedPerson = ref<Person | null>(null)
-const history = ref<Person[]>([])
+const navHistory = ref<Person[]>([])
 
 watch(() => props.person, (newPerson) => {
   if (newPerson) {
     selectedPerson.value = newPerson
-    history.value = [newPerson]
+    navHistory.value = [newPerson]
   }
 }, { immediate: true })
 
@@ -26,29 +26,29 @@ const ancestorData = computed(() => {
   return buildAncestors(selectedPerson.value, props.allPersons, props.allRelations)
 })
 
-function handleSelect(person: Person) {
+function navigateTo(person: Person) {
   selectedPerson.value = person
-  if (history.value[history.value.length - 1]?._id !== person._id) {
-    history.value.push(person)
+  if (navHistory.value[navHistory.value.length - 1]?._id !== person._id) {
+    navHistory.value.push(person)
   }
 }
 
 function goBack() {
-  if (history.value.length > 1) {
-    history.value.pop()
-    selectedPerson.value = history.value[history.value.length - 1]!
+  if (navHistory.value.length > 1) {
+    navHistory.value.pop()
+    selectedPerson.value = navHistory.value[navHistory.value.length - 1]!
   }
 }
 </script>
 
 <template>
-  <UModal v-model:open="open" fullscreen title="Diagramme Sunburst (Ancêtres)">
+  <UModal v-model:open="open" fullscreen title="Diagramme ancestral (Sunburst)">
     <template #body>
       <div v-if="ancestorData" class="flex flex-col items-center">
         <div class="mb-6 text-center relative w-full flex flex-col items-center max-w-2xl">
           <div class="absolute left-0 top-1/2 -translate-y-1/2">
             <UButton
-              v-if="history.length > 1"
+              v-if="navHistory.length > 1"
               color="neutral"
               icon="i-lucide-arrow-left"
               label="Retour"
@@ -58,14 +58,13 @@ function goBack() {
             />
           </div>
           <h3 class="text-xl font-bold">
-            Généalogie de {{ selectedPerson?.firstName }} {{ selectedPerson?.lastName }}
+            Genealogie de {{ selectedPerson?.firstName }} {{ selectedPerson?.lastName }}
           </h3>
           <p class="text-sm text-dimmed mt-1">
             Cliquez sur un segment pour explorer cette branche
           </p>
         </div>
-
-        <SunburstChart :data="ancestorData" @select="handleSelect" />
+        <SunburstChart :data="ancestorData" @select="navigateTo" />
       </div>
     </template>
   </UModal>

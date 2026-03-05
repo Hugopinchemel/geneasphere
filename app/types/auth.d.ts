@@ -9,6 +9,7 @@ export interface User {
   avatar?: AvatarProps
   status: UserStatus
   location: string
+  currentTeamId?: string
 }
 
 export interface TeamMember {

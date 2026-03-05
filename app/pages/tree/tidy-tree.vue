@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { MatrimonialNode, Person } from '~/types'
 
-definePageMeta({ title: 'Arbre Tidy' })
+definePageMeta({ title: 'Arbre généalogique' })
 
 const headers = useRequestHeaders(['cookie'])
 const toast = useToast()
@@ -41,11 +41,21 @@ watch(searchQuery, (v) => {
   showResults.value = v.length > 0
 })
 
+// ─── Historique undo/redo ────────────────────────────────────────────────────
+const { push: recordAction, undo, redo, canUndo, canRedo, lastLabel, nextLabel } = useHistory()
+
 function addPerson(person: Person) {
   const id = getId(person)
   if (!treePersonIds.value.includes(id)) {
-    const connected = findConnectedIds([id], allRelations.value ?? [])
-    treePersonIds.value = Array.from(new Set([...treePersonIds.value, ...connected]))
+    const connectedIds = findConnectedIds([id], allRelations.value ?? [])
+    const nextIds = Array.from(new Set([...treePersonIds.value, ...connectedIds]))
+    const prevIds = [...treePersonIds.value]
+    treePersonIds.value = nextIds
+    recordAction({
+      libelle: `Ajout de ${person.firstName} ${person.lastName}`,
+      annuler: () => { treePersonIds.value = prevIds },
+      retablir: () => { treePersonIds.value = nextIds }
+    })
     toast.add({ title: `${person.firstName} ${person.lastName} et sa famille ajoutés`, color: 'success' })
   }
   searchQuery.value = ''
@@ -53,11 +63,25 @@ function addPerson(person: Person) {
 }
 
 function removePerson(id: string) {
-  treePersonIds.value = treePersonIds.value.filter(pid => pid !== id)
+  const prevIds = [...treePersonIds.value]
+  const nextIds = treePersonIds.value.filter(pid => pid !== id)
+  const person = treePersons.value.find(p => getId(p) === id)
+  treePersonIds.value = nextIds
+  recordAction({
+    libelle: `Suppression de ${person ? `${person.firstName} ${person.lastName}` : id}`,
+    annuler: () => { treePersonIds.value = prevIds },
+    retablir: () => { treePersonIds.value = nextIds }
+  })
 }
 
-function clearTree() {
+function resetTree() {
+  const prevIds = [...treePersonIds.value]
   treePersonIds.value = []
+  recordAction({
+    libelle: 'Réinitialisation de l\'arbre',
+    annuler: () => { treePersonIds.value = prevIds },
+    retablir: () => { treePersonIds.value = [] }
+  })
   toast.add({ title: 'Arbre réinitialisé', color: 'neutral' })
 }
 
@@ -84,18 +108,37 @@ const treeGroups = computed(() =>
   buildTree(treePersons.value, allRelations.value ?? [])
 )
 
-// ─── Sunburst ───────────────────────────────────────────────────────────────
-const selectedPersonForSunburst = ref<Person | null>(null)
-const isSunburstModalOpen = ref(false)
+// ─── Diagramme sunburst ──────────────────────────────────────────────────────
+const sunburstPerson = ref<Person | null>(null)
+const sunburstOpen = ref(false)
 
 function openSunburst(person: Person) {
-  selectedPersonForSunburst.value = person
-  isSunburstModalOpen.value = true
+  sunburstPerson.value = person
+  sunburstOpen.value = true
 }
 
 const isLoading = computed(() =>
   personsStatus.value === 'pending' || relationsStatus.value === 'pending'
 )
+
+// ─── Accès concurrent ────────────────────────────────────────────────────────
+const treeResourceId = computed(() => 'tree-view')
+const { isLockedByOther, lockOwner } = useLocks(treeResourceId)
+
+// ─── Raccourcis clavier ──────────────────────────────────────────────────────
+onMounted(() => { window.addEventListener('keydown', handleKeyboard) })
+onUnmounted(() => { window.removeEventListener('keydown', handleKeyboard) })
+
+function handleKeyboard(e: KeyboardEvent) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+    e.preventDefault()
+    undo()
+  }
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'y' || (e.shiftKey && e.key === 'z'))) {
+    e.preventDefault()
+    redo()
+  }
+}
 </script>
 
 <template>
@@ -106,6 +149,26 @@ const isLoading = computed(() =>
           <UDashboardSidebarCollapse />
         </template>
         <template #right>
+          <UTooltip text="Annuler (Ctrl+Z)">
+            <UButton
+              :disabled="!canUndo"
+              color="neutral"
+              icon="i-lucide-undo-2"
+              size="sm"
+              variant="ghost"
+              @click="undo"
+            />
+          </UTooltip>
+          <UTooltip text="Rétablir (Ctrl+Y)">
+            <UButton
+              :disabled="!canRedo"
+              color="neutral"
+              icon="i-lucide-redo-2"
+              size="sm"
+              variant="ghost"
+              @click="redo"
+            />
+          </UTooltip>
           <UButton
             v-if="treePersons.length"
             color="error"
@@ -113,7 +176,7 @@ const isLoading = computed(() =>
             label="Réinitialiser"
             size="sm"
             variant="soft"
-            @click="clearTree"
+            @click="resetTree"
           />
         </template>
       </UDashboardNavbar>
@@ -121,6 +184,17 @@ const isLoading = computed(() =>
 
     <template #body>
       <div class="flex flex-col gap-6 p-6 max-w-5xl mx-auto w-full">
+
+        <!-- Bannière accès concurrent -->
+        <UAlert
+          v-if="isLockedByOther"
+          :title="`Arbre consulté par ${lockOwner}`"
+          color="warning"
+          description="Un autre utilisateur consulte actuellement l'arbre. Vos modifications locales sont sauvegardées."
+          icon="i-lucide-lock"
+          variant="soft"
+        />
+
         <!-- Chargement -->
         <div v-if="isLoading" class="flex flex-col items-center gap-3 py-16">
           <UIcon class="size-8 text-primary animate-spin" name="i-lucide-loader-2" />
@@ -130,12 +204,12 @@ const isLoading = computed(() =>
         </div>
 
         <template v-else>
-          <!-- Import -->
+          <!-- Ajout de personnes -->
           <UCard variant="subtle">
             <template #header>
               <div class="flex items-center gap-2">
                 <UIcon class="text-primary" name="i-lucide-user-plus" />
-                <span class="font-semibold">Importer une personne</span>
+                <span class="font-semibold">Ajouter une personne</span>
               </div>
             </template>
 
@@ -190,7 +264,7 @@ const isLoading = computed(() =>
             </div>
           </UCard>
 
-          <!-- Membres -->
+          <!-- Liste des membres de l'arbre -->
           <UCard v-if="treePersons.length > 0" variant="subtle">
             <template #header>
               <div class="flex items-center gap-2">
@@ -218,9 +292,7 @@ const isLoading = computed(() =>
                 <div class="flex flex-col min-w-0 flex-1">
                   <span class="font-semibold text-sm truncate">{{ person.firstName }} {{ person.lastName }}</span>
                   <span class="text-xs text-dimmed">
-                    {{ formatDate(person.birthDate) }}<template v-if="person.birthPlace"> · {{
-                      person.birthPlace
-                    }}</template>
+                    {{ formatDate(person.birthDate) }}<template v-if="person.birthPlace"> · {{ person.birthPlace }}</template>
                   </span>
                 </div>
                 <UIcon :class="sexColor(person.sex)" :name="sexIcon(person.sex)" class="shrink-0" />
@@ -246,13 +318,13 @@ const isLoading = computed(() =>
 
           <!-- Modal Sunburst -->
           <SunburstModal
-            v-model:open="isSunburstModalOpen"
+            v-model:open="sunburstOpen"
             :all-persons="allPersons || []"
             :all-relations="allRelations || []"
-            :person="selectedPersonForSunburst"
+            :person="sunburstPerson"
           />
 
-          <!-- Arbre -->
+          <!-- Arbre hiérarchique -->
           <UCard v-if="treePersons.length > 0" variant="subtle">
             <template #header>
               <div class="flex items-center gap-2">
@@ -266,9 +338,35 @@ const isLoading = computed(() =>
                   variant="outline"
                 />
               </div>
+              <div class="flex items-center gap-2 ml-auto">
+                <UTooltip :text="canUndo ? `Annuler : ${lastLabel}` : 'Rien à annuler'">
+                  <UButton
+                    :disabled="!canUndo"
+                    color="neutral"
+                    icon="i-lucide-undo-2"
+                    size="xs"
+                    variant="ghost"
+                    @click="undo"
+                  />
+                </UTooltip>
+                <UTooltip :text="canRedo ? `Rétablir : ${nextLabel}` : 'Rien à rétablir'">
+                  <UButton
+                    :disabled="!canRedo"
+                    color="neutral"
+                    icon="i-lucide-redo-2"
+                    size="xs"
+                    variant="ghost"
+                    @click="redo"
+                  />
+                </UTooltip>
+              </div>
             </template>
 
-            <div v-if="treeGroups.length > 0" class="overflow-auto p-6">
+            <div
+              v-if="treeGroups.length > 0"
+              class="overflow-auto p-6"
+              style="max-height: 65vh;"
+            >
               <ClientOnly>
                 <div class="flex gap-12 justify-start min-w-max pb-4">
                   <TreeNode
@@ -287,8 +385,7 @@ const isLoading = computed(() =>
                 Aucun groupe trouvé. Vérifiez les
                 <NuxtLink class="text-primary underline underline-offset-2" to="/matrimonial-nodes">
                   nœuds matrimoniaux
-                </NuxtLink>
-                .
+                </NuxtLink>.
               </p>
             </div>
           </UCard>

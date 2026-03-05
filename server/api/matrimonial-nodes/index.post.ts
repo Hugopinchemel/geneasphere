@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, readValidatedBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
+import { resolveTeamId } from '~~/server/utils/team'
 import { MatrimonialNodeModel, type IMatrimonialNode } from '~~/server/models/MatrimonialNode'
-import { TeamModel } from '~~/server/models/Team'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -37,18 +37,8 @@ export default defineEventHandler(async (event) => {
 
   await connectToDB()
 
-  let teamId = user.currentTeamId
-
-  if (!teamId) {
-    const team = await TeamModel.findOne({ members: user.id })
-    if (team) {
-      teamId = team._id.toString()
-    }
-  }
-
-  if (!teamId) {
-    throw createError({ statusCode: 400, statusMessage: 'No team selected' })
-  }
+  const teamId = await resolveTeamId(user)
+  if (!teamId) throw createError({ statusCode: 400, statusMessage: 'No team selected' })
 
   // Multi-node consistency check
   const allNodes = await MatrimonialNodeModel.find({ teamId })

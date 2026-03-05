@@ -1,4 +1,3 @@
-import { defineEventHandler } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 

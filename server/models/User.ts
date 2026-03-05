@@ -14,6 +14,7 @@ export interface IUser {
   neutralColor?: string
   currentTeamId?: string
   googleId?: string
+  inboxEnabled?: boolean
   createdAt?: Date
   updatedAt?: Date
 }
@@ -28,7 +29,8 @@ const UserSchema = new Schema<IUser>({
   theme: { type: String, enum: ['light', 'dark'], default: 'dark' },
   primaryColor: { type: String, default: 'green' },
   neutralColor: { type: String, default: 'zinc' },
-  currentTeamId: { type: String, default: '' }
+  currentTeamId: { type: String, default: '' },
+  inboxEnabled: { type: Boolean, default: false }
 }, { timestamps: true })
 
 export const UserModel: Model<IUser> = models.User || model<IUser>('User', UserSchema)

@@ -28,7 +28,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 404, statusMessage: 'User not found' })
   }
 
-  const match = await compare(currentPw, user.password)
+  const match = await compare(currentPw, user.password || '')
   if (!match) {
     throw createError({ statusCode: 401, statusMessage: 'Current password is incorrect' })
   }

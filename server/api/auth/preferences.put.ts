@@ -12,16 +12,18 @@ export default defineEventHandler(async (event) => {
     theme?: 'light' | 'dark'
     primaryColor?: string
     neutralColor?: string
+    inboxEnabled?: boolean
   }>(event)
 
   await connectToDB()
 
-  const update: Record<string, string> = {}
+  const update: Record<string, unknown> = {}
   if (body.theme && ['light', 'dark'].includes(body.theme)) {
     update.theme = body.theme
   }
   if (body.primaryColor) update.primaryColor = body.primaryColor
   if (body.neutralColor) update.neutralColor = body.neutralColor
+  if (typeof body.inboxEnabled === 'boolean') update.inboxEnabled = body.inboxEnabled
 
   const user = await UserModel.findByIdAndUpdate(session.user.id, update, { returnDocument: 'after' }).select('-password').lean()
   if (!user) {
@@ -35,7 +37,8 @@ export default defineEventHandler(async (event) => {
     avatar: user.avatar || '',
     theme: user.theme || 'dark',
     primaryColor: user.primaryColor || 'green',
-    neutralColor: user.neutralColor || 'zinc'
+    neutralColor: user.neutralColor || 'zinc',
+    inboxEnabled: user.inboxEnabled ?? false
   }
   await setUserSession(event, { user: safeUser })
 

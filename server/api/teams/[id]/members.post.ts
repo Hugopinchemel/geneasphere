@@ -36,7 +36,7 @@ export default defineEventHandler(async (event) => {
 
   // Add user to members if not already there
   if (!team.members.map(m => m.toString()).includes(userToAdd._id.toString())) {
-    team.members.push(userToAdd._id as Types.ObjectId)
+    team.members.push(userToAdd._id as unknown as Types.ObjectId)
     await team.save()
   }
 

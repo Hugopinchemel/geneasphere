@@ -1,13 +1,15 @@
 import type { AvatarProps } from '@nuxt/ui'
-import type { User } from './auth'
 
 export interface Mail {
-  id: number
+  uid: number
   unread?: boolean
-  from: User
+  from: string
   subject: string
   body: string
+  html?: string
   date: string
+  cc?: string | null
+  attachments: { filename: string }[]
 }
 
 export interface Member {
@@ -15,22 +17,6 @@ export interface Member {
   username: string
   role: 'member' | 'owner'
   avatar: AvatarProps
-}
-
-export interface Stat {
-  title: string
-  icon: string
-  value: number | string
-  variation: number
-  formatter?: (value: number) => string
-}
-
-export interface Sale {
-  id: string
-  date: string
-  status: string
-  email: string
-  amount: number
 }
 
 export interface Notification {
@@ -41,9 +27,3 @@ export interface Notification {
   date: string
 }
 
-export type Period = 'daily' | 'weekly' | 'monthly'
-
-export interface Range {
-  start: Date
-  end: Date
-}

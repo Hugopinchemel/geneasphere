@@ -2,7 +2,6 @@
 definePageMeta({ layout: 'auth' })
 
 const router = useRouter()
-const route = useRoute()
 const toast = useToast()
 const loading = ref(false)
 const fields = [
@@ -30,7 +29,7 @@ async function onSubmit({ data}: { data: Record<string, string> }) {
       body: { name: data.name, email: data.email, password: data.password }
     })
     await fetchSession()
-    await router.replace((route.query.redirect as string) || '/')
+    await router.replace('/onboarding')
   } catch (err: unknown) {
     const e = err as { data?: { statusMessage?: string } }
     const msg = e?.data?.statusMessage || 'Inscription échouée'

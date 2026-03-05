@@ -1,7 +1,7 @@
 import { createError, defineEventHandler, getRouterParam, readValidatedBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
+import { resolveTeamIds } from '~~/server/utils/team'
 import { MatrimonialNodeModel, type IMatrimonialNode } from '~~/server/models/MatrimonialNode'
-import { TeamModel } from '~~/server/models/Team'
 import { z } from 'zod'
 
 const bodySchema = z.object({
@@ -41,15 +41,11 @@ export default defineEventHandler(async (event) => {
 
   await connectToDB()
 
-  const myTeams = await TeamModel.find({ members: user.id }).select('_id')
-  const myTeamIds = myTeams.map(t => t._id)
+  const teamIds = await resolveTeamIds(user.id)
 
   const existingNode = await MatrimonialNodeModel.findOne({
     _id: id,
-    $or: [
-      { teamId: { $in: myTeamIds } },
-      { createdBy: user.id }
-    ]
+    $or: [{ teamId: { $in: teamIds } }, { createdBy: user.id }]
   })
 
   if (!existingNode) {
@@ -84,13 +80,7 @@ export default defineEventHandler(async (event) => {
   }
 
   const node = await MatrimonialNodeModel.findOneAndUpdate(
-    {
-      _id: id,
-      $or: [
-        { teamId: { $in: myTeamIds } },
-        { createdBy: user.id }
-      ]
-    },
+    { _id: id, $or: [{ teamId: { $in: teamIds } }, { createdBy: user.id }] },
     updateData,
     { returnDocument: 'after' }
   )
