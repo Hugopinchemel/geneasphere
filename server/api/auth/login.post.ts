@@ -46,5 +46,26 @@ export default defineEventHandler(async (event) => {
     currentTeamId: user.currentTeamId || ''
   }
   await setUserSession(event, { user: safeUser })
+
+  // Envoyer une notification de connexion si activée
+  if (user.loginNotifications) {
+    try {
+      const { getMailer } = await import('~~/server/utils/mailer')
+      const { createLoginNotificationEmail } = await import('~~/server/utils/emailTemplates')
+
+      const mailer = await getMailer()
+      const ipAddress = getRequestIP(event, { xForwardedFor: true })
+      const emailContent = createLoginNotificationEmail(user.name, new Date(), ipAddress)
+
+      await mailer.sendMail({
+        to: user.email,
+        subject: emailContent.subject,
+        body: emailContent.body
+      })
+    } catch (error) {
+      console.error('Failed to send login notification email:', error)
+    }
+  }
+
   return { user: safeUser }
 })

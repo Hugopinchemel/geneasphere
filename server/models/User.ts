@@ -15,6 +15,9 @@ export interface IUser {
   currentTeamId?: string
   googleId?: string
   inboxEnabled?: boolean
+  resetToken?: string
+  resetTokenExpiry?: Date
+  loginNotifications?: boolean
   createdAt?: Date
   updatedAt?: Date
 }
@@ -30,7 +33,10 @@ const UserSchema = new Schema<IUser>({
   primaryColor: { type: String, default: 'green' },
   neutralColor: { type: String, default: 'zinc' },
   currentTeamId: { type: String, default: '' },
-  inboxEnabled: { type: Boolean, default: false }
+  inboxEnabled: { type: Boolean, default: false },
+  resetToken: { type: String, default: '' },
+  resetTokenExpiry: { type: Date },
+  loginNotifications: { type: Boolean, default: false }
 }, { timestamps: true })
 
 export const UserModel: Model<IUser> = models.User || model<IUser>('User', UserSchema)
