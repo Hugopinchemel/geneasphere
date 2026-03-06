@@ -15,6 +15,7 @@ module.exports = {
         HOST: process.env.HOST || '0.0.0.0',
         MONGODB_URI: process.env.MONGODB_URI,
         NUXT_SESSION_PASSWORD: process.env.NUXT_SESSION_PASSWORD,
+        NUXT_PUBLIC_BASE_URL: process.env.NUXT_PUBLIC_BASE_URL || 'https://geneasphere.hugo-pinchemel.fr',
         NUXT_OAUTH_GOOGLE_CLIENT_ID: process.env.NUXT_OAUTH_GOOGLE_CLIENT_ID,
         NUXT_OAUTH_GOOGLE_CLIENT_SECRET: process.env.NUXT_OAUTH_GOOGLE_CLIENT_SECRET,
         MAILER_SMTP_HOST: process.env.MAILER_SMTP_HOST || 'localhost',
@@ -22,10 +23,10 @@ module.exports = {
         MAILER_SMTP_SECURE: process.env.MAILER_SMTP_SECURE || false,
         MAILER_IMAP_HOST: process.env.MAILER_IMAP_HOST || 'localhost',
         MAILER_IMAP_PORT: process.env.MAILER_IMAP_PORT || 143,
-        MAILER_IMAP_SECURE: process.env.MAILER_IMAP_SECURE || false,
+        MAILER_IMAP_SECURE: process.env.MAILER_IMAP_PASS || false,
         MAILER_IMAP_USER: process.env.MAILER_IMAP_USER || 'contact',
         MAILER_IMAP_PASS: process.env.MAILER_IMAP_PASS,
-        MAILER_FROM: process.env.MAILER_FROM,
+        MAILER_FROM: process.env.MAILER_FROM || '"GeneaSphere" <geneasphere@hugo-pinchemel.fr>',
         NODE_PATH: __dirname + '/node_modules'
       }
     },

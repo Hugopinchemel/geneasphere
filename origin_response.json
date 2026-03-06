@@ -1,0 +1,1 @@
+{"success":false,"errors":[{"code":7003,"message":"Could not route to \/zones\/96b0e81cacd56a8e0c8c33c4d158d517\/ssl\/origin_certificates, perhaps your object identifier is invalid?"},{"code":7000,"message":"No route for that URI"}],"messages":[],"result":null}
