@@ -3,8 +3,13 @@ import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 import { getMailer } from '~~/server/utils/mailer'
 import { createForgottenEmailRecoveryEmail } from '~~/server/utils/emailTemplates'
+import { useRateLimit } from '~~/server/utils/rateLimit'
+
+const rateLimit = useRateLimit({ key: 'email-recovery', limit: 3, windowMs: 15 * 60 * 1000 })
 
 export default defineEventHandler(async (event) => {
+  await rateLimit(event)
+
   const body = await readBody<{ name?: string }>(event)
 
   const name = (body.name || '').trim()
@@ -17,8 +22,8 @@ export default defineEventHandler(async (event) => {
 
   // Rechercher l'utilisateur par nom (insensible à la casse)
   const user = await UserModel.findOne({
-    name: { $regex: new RegExp(`^${name}$`, 'i') }
-  })
+    name: name
+  }).collation({ locale: 'en', strength: 2 })
 
   // Pour des raisons de sécurité, on renvoie toujours un succès même si l'utilisateur n'existe pas
   if (!user) {

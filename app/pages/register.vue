@@ -21,7 +21,9 @@ const providers = [
 ]
 const { fetch: fetchSession } = useUserSession()
 
-async function onSubmit({ data}: { data: Record<string, string> }) {
+async function onSubmit(payload: unknown) {
+  const event = payload as { data?: Record<string, string> }
+  const data = event.data ?? (payload as Record<string, string>)
   loading.value = true
   try {
     await $fetch('/api/auth/register', {
@@ -52,9 +54,8 @@ async function onSubmit({ data}: { data: Record<string, string> }) {
       :fields="fields"
       :loading="loading"
       :providers="providers"
-      align="top"
+      :submit="{ label: 'Créer mon compte' }"
       icon="i-lucide-user-plus"
-      submit-button-options-label="Créer mon compte"
       title="Créer un compte"
       @submit="onSubmit"
     >

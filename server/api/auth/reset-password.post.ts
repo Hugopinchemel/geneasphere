@@ -3,6 +3,7 @@ import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 import { verifyResetToken } from '~~/server/utils/resetToken'
 import { hash } from 'bcryptjs'
+import { validatePassword } from '~~/server/utils/password'
 
 export default defineEventHandler(async (event) => {
   const body = await readBody<{ token?: string, password?: string }>(event)
@@ -13,8 +14,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Token et mot de passe requis' })
   }
 
-  if (newPassword.length < 8) {
-    throw createError({ statusCode: 400, statusMessage: 'Le mot de passe doit contenir au moins 8 caractères' })
+  const pwdValidation = validatePassword(newPassword)
+  if (!pwdValidation.valid) {
+    throw createError({ statusCode: 400, statusMessage: pwdValidation.message })
   }
 
   const payload = verifyResetToken(token)

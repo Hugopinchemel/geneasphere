@@ -2,6 +2,7 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 import { compare, hash } from 'bcryptjs'
+import { validatePassword } from '~~/server/utils/password'
 
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
@@ -17,8 +18,9 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing current or new password' })
   }
 
-  if (newPw.length < 8) {
-    throw createError({ statusCode: 400, statusMessage: 'New password must be at least 8 characters' })
+  const pwdValidation = validatePassword(newPw)
+  if (!pwdValidation.valid) {
+    throw createError({ statusCode: 400, statusMessage: pwdValidation.message })
   }
 
   await connectToDB()

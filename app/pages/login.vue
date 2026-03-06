@@ -34,12 +34,22 @@ onMounted(() => {
   }
 })
 
-async function onSubmit({ data }: { data: Record<string, string> }) {
+async function onSubmit(payload: unknown) {
+  const event = payload as { data?: Record<string, string> }
+  const data = event.data ?? (payload as Record<string, string>)
+
+  // Récupérer les valeurs directement du DOM pour gérer l'autofill du navigateur
+  const emailInput = document.querySelector('input[type="email"]') as HTMLInputElement
+  const passwordInput = document.querySelector('input[type="password"]') as HTMLInputElement
+
+  const email = data.email || emailInput?.value || ''
+  const password = data.password || passwordInput?.value || ''
+
   loading.value = true
   try {
     await $fetch('/api/auth/login', {
       method: 'POST',
-      body: { email: data.email, password: data.password }
+      body: { email, password }
     })
     await fetchSession()
     await router.replace((route.query.redirect as string) || '/')
@@ -93,11 +103,10 @@ function openForgot() {
       :fields="fields"
       :loading="loading"
       :providers="providers"
-      align="top"
+      :submit="{ label: 'Se connecter' }"
       icon="i-lucide-log-in"
-      submit-button-options-label="Se connecter"
       title="Connexion"
-      @submit="onSubmit"
+      :on-submit="onSubmit"
     >
       <template #description>
         Pas encore de compte ?

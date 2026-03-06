@@ -3,8 +3,14 @@ import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 import { TeamModel } from '~~/server/models/Team'
 import { hash } from 'bcryptjs'
+import { validatePassword } from '~~/server/utils/password'
+import { useRateLimit } from '~~/server/utils/rateLimit'
+
+const rateLimit = useRateLimit({ key: 'register', limit: 3, windowMs: 60 * 60 * 1000 })
 
 export default defineEventHandler(async (event) => {
+  await rateLimit(event)
+
   const body = await readBody<{ name?: string, email?: string, password?: string }>(event)
 
   const name = (body.name || '').trim()
@@ -13,6 +19,11 @@ export default defineEventHandler(async (event) => {
 
   if (!name || !email || !password) {
     throw createError({ statusCode: 400, statusMessage: 'Missing name, email or password' })
+  }
+
+  const pwdValidation = validatePassword(password)
+  if (!pwdValidation.valid) {
+    throw createError({ statusCode: 400, statusMessage: pwdValidation.message })
   }
 
   await connectToDB()

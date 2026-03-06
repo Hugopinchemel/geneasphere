@@ -1,6 +1,9 @@
-import { readValidatedBody } from 'h3'
+import { createError, defineEventHandler, readValidatedBody } from 'h3'
 import { z } from 'zod'
 import { getMailer } from '~~/server/utils/mailer'
+import { useRateLimit } from '~~/server/utils/rateLimit'
+
+const rateLimit = useRateLimit({ key: 'mail-send', limit: 10, windowMs: 60 * 60 * 1000 })
 
 const bodySchema = z.object({
   to: z.string().email('Adresse email invalide'),
@@ -13,6 +16,8 @@ const bodySchema = z.object({
 export default defineEventHandler(async (event) => {
   const session = await getUserSession(event)
   if (!session?.user) throw createError({ statusCode: 401, statusMessage: 'Unauthorized' })
+
+  await rateLimit(event)
 
   const data = await readValidatedBody(event, bodySchema.parse)
 

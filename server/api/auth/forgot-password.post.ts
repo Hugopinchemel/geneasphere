@@ -1,9 +1,14 @@
-import { readBody } from 'h3'
+import { createError, defineEventHandler, readBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 import { generateResetToken } from '~~/server/utils/resetToken'
+import { useRateLimit } from '~~/server/utils/rateLimit'
+
+const rateLimit = useRateLimit({ key: 'forgot-password', limit: 3, windowMs: 15 * 60 * 1000 })
 
 export default defineEventHandler(async (event) => {
+  await rateLimit(event)
+
   const body = await readBody<{ email?: string }>(event)
   const email = (body.email || '').toLowerCase().trim()
 

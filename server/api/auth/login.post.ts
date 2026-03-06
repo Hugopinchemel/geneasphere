@@ -2,8 +2,13 @@ import { createError, defineEventHandler, readBody } from 'h3'
 import { connectToDB } from '~~/server/utils/db'
 import { UserModel } from '~~/server/models/User'
 import { compare } from 'bcryptjs'
+import { useRateLimit } from '~~/server/utils/rateLimit'
+
+const rateLimit = useRateLimit({ key: 'login', limit: 5, windowMs: 15 * 60 * 1000 })
 
 export default defineEventHandler(async (event) => {
+  await rateLimit(event)
+
   const body = await readBody<{ email?: string, password?: string }>(event)
 
   const email = (body.email || '').toLowerCase().trim()
@@ -13,7 +18,12 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Missing email or password' })
   }
 
-  await connectToDB()
+  try {
+    await connectToDB()
+  } catch (error) {
+    console.error('Database connection error in login:', error)
+    throw createError({ statusCode: 500, statusMessage: 'Internal Server Error' })
+  }
 
   const user = await UserModel.findOne({ email })
   if (!user) {
@@ -27,11 +37,15 @@ export default defineEventHandler(async (event) => {
 
   // S'assurer que l'utilisateur a une team actuelle
   if (!user.currentTeamId) {
-    const { TeamModel } = await import('~~/server/models/Team')
-    const team = await TeamModel.findOne({ members: user._id })
-    if (team) {
-      user.currentTeamId = team._id.toString()
-      await user.save()
+    try {
+      const { TeamModel } = await import('~~/server/models/Team')
+      const team = await TeamModel.findOne({ members: user._id })
+      if (team) {
+        user.currentTeamId = team._id.toString()
+        await user.save()
+      }
+    } catch (error) {
+      console.error('Failed to resolve/save currentTeamId:', error)
     }
   }
 
