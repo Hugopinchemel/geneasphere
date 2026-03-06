@@ -15,7 +15,7 @@ const providers = [
     icon: 'i-simple-icons-google',
     color: 'neutral' as const,
     onClick: () => {
-      navigateTo('/api/auth/google', { external: true })
+      navigateTo('/auth/google', { external: true })
     }
   }
 ]
