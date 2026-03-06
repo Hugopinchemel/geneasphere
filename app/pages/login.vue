@@ -5,6 +5,7 @@ const router = useRouter()
 const route = useRoute()
 const toast = useToast()
 const loading = ref(false)
+
 const fields = [
   { name: 'email', label: 'Adresse e-mail', type: 'email', placeholder: 'vous@exemple.com', required: true },
   { name: 'password', label: 'Mot de passe', type: 'password', placeholder: '••••••••', required: true }
@@ -14,9 +15,7 @@ const providers = [
     label: 'Continuer avec Google',
     icon: 'i-simple-icons-google',
     color: 'neutral' as const,
-    onClick: () => {
-      window.location.href = '/auth/google'
-    }
+    onClick: () => { window.location.href = '/auth/google' }
   }
 ]
 const { fetch: fetchSession } = useUserSession()
@@ -32,11 +31,10 @@ onMounted(() => {
   if (error) {
     const msg = oauthErrorMessages[error] || `Erreur OAuth : ${error}`
     toast.add({ title: 'Connexion Google échouée', description: msg, color: 'error', duration: 8000 })
-    console.error('[Login page] OAuth error from query:', error)
   }
 })
 
-async function onSubmit({ data}: { data: Record<string, string> }) {
+async function onSubmit({ data }: { data: Record<string, string> }) {
   loading.value = true
   try {
     await $fetch('/api/auth/login', {
@@ -52,6 +50,34 @@ async function onSubmit({ data}: { data: Record<string, string> }) {
   } finally {
     loading.value = false
   }
+}
+
+// ─── Mot de passe oublié ──────────────────────────────────────────────────────
+const forgotOpen = ref(false)
+const forgotEmail = ref('')
+const forgotLoading = ref(false)
+const forgotSent = ref(false)
+
+async function onForgotSubmit() {
+  if (!forgotEmail.value) return
+  forgotLoading.value = true
+  try {
+    await $fetch('/api/auth/forgot-password', {
+      method: 'POST',
+      body: { email: forgotEmail.value }
+    })
+    forgotSent.value = true
+  } catch {
+    toast.add({ title: 'Erreur', description: 'Impossible d\'envoyer l\'email', color: 'error' })
+  } finally {
+    forgotLoading.value = false
+  }
+}
+
+function openForgot() {
+  forgotEmail.value = ''
+  forgotSent.value = false
+  forgotOpen.value = true
 }
 </script>
 
@@ -77,6 +103,73 @@ async function onSubmit({ data}: { data: Record<string, string> }) {
         Pas encore de compte ?
         <NuxtLink class="text-primary hover:underline font-medium" to="/register">Créer un compte</NuxtLink>
       </template>
+
+      <template #footer>
+        <button
+          class="text-xs text-dimmed hover:text-primary transition-colors underline underline-offset-2"
+          type="button"
+          @click="openForgot"
+        >
+          Mot de passe oublié ?
+        </button>
+      </template>
     </UAuthForm>
+
+    <!-- Modal mot de passe oublié -->
+    <UModal v-model:open="forgotOpen" title="Mot de passe oublié">
+      <template #body>
+        <!-- Succès -->
+        <div v-if="forgotSent" class="flex flex-col items-center gap-4 text-center py-2">
+          <div class="p-3 rounded-full bg-success/10">
+            <UIcon class="size-8 text-success" name="i-lucide-mail-check" />
+          </div>
+          <p class="font-semibold">
+            Email envoyé
+          </p>
+          <p class="text-sm text-dimmed max-w-xs">
+            Si un compte existe pour <span class="font-medium text-highlighted">{{ forgotEmail }}</span>,
+            vous recevrez un lien de réinitialisation valable 1 heure.
+          </p>
+          <UButton
+            color="primary"
+            label="Fermer"
+            variant="soft"
+            @click="forgotOpen = false"
+          />
+        </div>
+
+        <!-- Formulaire -->
+        <form v-else class="flex flex-col gap-4" @submit.prevent="onForgotSubmit">
+          <p class="text-sm text-dimmed">
+            Entrez votre adresse e-mail. Vous recevrez un lien pour réinitialiser votre mot de passe.
+          </p>
+          <UFormField label="Adresse e-mail" required>
+            <UInput
+              v-model="forgotEmail"
+              autofocus
+              class="w-full"
+              placeholder="vous@exemple.com"
+              type="email"
+            />
+          </UFormField>
+          <div class="flex justify-end gap-3">
+            <UButton
+              color="neutral"
+              label="Annuler"
+              variant="subtle"
+              @click="forgotOpen = false"
+            />
+            <UButton
+              :disabled="!forgotEmail"
+              :loading="forgotLoading"
+              color="primary"
+              icon="i-lucide-send"
+              label="Envoyer le lien"
+              type="submit"
+            />
+          </div>
+        </form>
+      </template>
+    </UModal>
   </div>
 </template>

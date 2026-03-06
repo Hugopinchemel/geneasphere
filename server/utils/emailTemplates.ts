@@ -77,3 +77,21 @@ Cordialement,
 L'équipe GeneaSphere`
   }
 }
+
+export function createForgottenEmailRecoveryEmail(userName: string, email: string): EmailTemplate {
+  return {
+    subject: 'Rappel de votre adresse email - GeneaSphere',
+    body: `Bonjour ${userName},
+
+Vous avez demandé un rappel de votre adresse email associée à votre compte GeneaSphere.
+
+Votre adresse email est : ${email}
+
+Vous pouvez maintenant l'utiliser pour vous connecter à votre compte.
+
+Si vous n'avez pas fait cette demande, vous pouvez ignorer cet email en toute sécurité.
+
+Cordialement,
+L'équipe GeneaSphere`
+  }
+}
